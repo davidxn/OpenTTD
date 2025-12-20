@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file bridge_gui.cpp Graphical user interface for bridge construction */
+/** @file bridge_gui.cpp Graphical user interface for bridge construction. */
 
 #include "stdafx.h"
 #include "error.h"
@@ -176,7 +176,7 @@ public:
 		this->vscroll->SetCount(this->bridges.size());
 	}
 
-	~BuildBridgeWindow()
+	~BuildBridgeWindow() override
 	{
 		BuildBridgeWindow::last_sorting = this->bridges.GetListing();
 	}
@@ -428,7 +428,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 			}
 		}
 		/* give error cause if no bridges available here*/
-		if (!any_available) ret = type_check;
+		if (!any_available) ret = std::move(type_check);
 	}
 
 	if (!bl.empty()) {

@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file squirrel_helper.hpp declarations and parts of the implementation of the class for convert code */
+/** @file squirrel_helper.hpp Declarations and parts of the implementation of the class for convert code. */
 
 #ifndef SQUIRREL_HELPER_HPP
 #define SQUIRREL_HELPER_HPP
@@ -182,7 +182,7 @@ namespace SQConvert {
 	 */
 	template <class Tcls, typename Tretval, typename... Targs>
 	struct HelperT<Tretval(Tcls:: *)(Targs...)> {
-		static int SQCall(Tcls *instance, Tretval(Tcls:: *func)(Targs...), HSQUIRRELVM vm)
+		static int SQCall(Tcls *instance, auto func, HSQUIRRELVM vm)
 		{
 			return SQCall(instance, func, vm, std::index_sequence_for<Targs...>{});
 		}
@@ -194,7 +194,7 @@ namespace SQConvert {
 
 	private:
 		template <size_t... i>
-		static int SQCall(Tcls *instance, Tretval(Tcls:: *func)(Targs...), [[maybe_unused]] HSQUIRRELVM vm, std::index_sequence<i...>)
+		static int SQCall(Tcls *instance, auto func, [[maybe_unused]] HSQUIRRELVM vm, std::index_sequence<i...>)
 		{
 			if constexpr (std::is_void_v<Tretval>) {
 				(instance->*func)(
@@ -219,6 +219,12 @@ namespace SQConvert {
 			return inst;
 		}
 	};
+
+	/**
+	 * The real C++ caller for const methods.
+	 */
+	template <class Tcls, typename Tretval, typename... Targs>
+	struct HelperT<Tretval(Tcls:: *)(Targs...) const> : HelperT<Tretval(Tcls:: *)(Targs...)> {};
 
 
 	/**

@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file  vehicle_base.h Base class for all vehicles. */
+/** @file vehicle_base.h Base class for all vehicles. */
 
 #ifndef VEHICLE_BASE_H
 #define VEHICLE_BASE_H
@@ -335,7 +335,7 @@ public:
 
 	void PreDestructor();
 	/** We want to 'destruct' the right class. */
-	virtual ~Vehicle();
+	~Vehicle() override;
 
 	void BeginLoading();
 	void CancelReservation(StationID next, Station *st);

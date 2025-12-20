@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file afterload.cpp Code updating data after game load */
+/** @file afterload.cpp Code updating data after game load. */
 
 #include "../stdafx.h"
 #include "../void_map.h"
@@ -1766,7 +1766,7 @@ bool AfterLoadGame()
 		for (Station *st : Station::Iterate()) {
 			for (GoodsEntry &ge : st->goods) {
 				ge.last_speed = 0;
-				if (ge.HasData() && ge.GetData().cargo.AvailableCount() != 0) ge.status.Set(GoodsEntry::State::Rating);
+				if (ge.AvailableCount() != 0) ge.status.Set(GoodsEntry::State::Rating);
 			}
 		}
 	}

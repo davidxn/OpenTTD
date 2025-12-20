@@ -25,7 +25,7 @@ class ScriptListSorter;
 class ScriptList : public ScriptObject {
 public:
 	/** Type of sorter */
-	enum SorterType {
+	enum SorterType : uint8_t {
 		SORT_BY_VALUE, ///< Sort the list based on the value of the item.
 		SORT_BY_ITEM,  ///< Sort the list based on the item itself.
 	};
@@ -144,9 +144,9 @@ protected:
 		ScriptList::FillList<T>(vm, list, [](const T *) { return true; });
 	}
 
-	virtual bool SaveObject(HSQUIRRELVM vm) override;
+	virtual bool SaveObject(HSQUIRRELVM vm) const override;
 	virtual bool LoadObject(HSQUIRRELVM vm) override;
-	virtual ScriptObject *CloneObject() override;
+	virtual ScriptObject *CloneObject() const override;
 
 	/**
 	 * Copy the content of a list.
@@ -154,16 +154,26 @@ protected:
 	 */
 	void CopyList(const ScriptList *list);
 
+	template <class ValueFilter>
+	void RemoveItems(ValueFilter value_filter)
+	{
+		this->modifications++;
+
+		for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
+			next_iter = std::next(iter);
+			if (value_filter(iter->first, iter->second)) this->RemoveItem(iter->first);
+		}
+	}
+
 public:
-	typedef std::set<SQInteger> ScriptItemList;                   ///< The list of items inside the bucket
-	typedef std::map<SQInteger, ScriptItemList> ScriptListBucket; ///< The bucket list per value
-	typedef std::map<SQInteger, SQInteger> ScriptListMap;         ///< List per item
+	using ScriptListSet = std::set<std::pair<SQInteger, SQInteger>>; ///< List per value
+	using ScriptListMap = std::map<SQInteger, SQInteger>; ///< List per item
 
 	ScriptListMap items;           ///< The items in the list
-	ScriptListBucket buckets;      ///< The items in the list, sorted by value
+	ScriptListSet values; ///< The items in the list, sorted by value
 
 	ScriptList();
-	~ScriptList();
+	~ScriptList() override;
 
 #ifdef DOXYGEN_API
 	/**
@@ -192,7 +202,7 @@ public:
 	 * @param item the item to check for.
 	 * @return true if the item is in the list.
 	 */
-	bool HasItem(SQInteger item);
+	bool HasItem(SQInteger item) const;
 
 	/**
 	 * Go to the beginning of the list and return the item. To get the value use list.GetValue(list.Begin()).
@@ -212,27 +222,27 @@ public:
 	 * Check if a list is empty.
 	 * @return true if the list is empty.
 	 */
-	bool IsEmpty();
+	bool IsEmpty() const;
 
 	/**
 	 * Check if there is a element left. In other words, if this is false,
 	 * the last call to Begin() or Next() returned a valid item.
 	 * @return true if the current item is beyond end-of-list.
 	 */
-	bool IsEnd();
+	bool IsEnd() const;
 
 	/**
 	 * Returns the amount of items in the list.
 	 * @return amount of items in the list.
 	 */
-	SQInteger Count();
+	SQInteger Count() const;
 
 	/**
 	 * Get the value that belongs to this item.
 	 * @param item the item to get the value from
 	 * @return the value that belongs to this item.
 	 */
-	SQInteger GetValue(SQInteger item);
+	SQInteger GetValue(SQInteger item) const;
 
 	/**
 	 * Set a value of an item directly.
@@ -361,7 +371,7 @@ public:
 	/**
 	 * Used for 'foreach()' and [] get from Squirrel.
 	 */
-	SQInteger _get(HSQUIRRELVM vm);
+	SQInteger _get(HSQUIRRELVM vm) const;
 
 	/**
 	 * Used for [] set from Squirrel.
