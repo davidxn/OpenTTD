@@ -4061,7 +4061,8 @@ STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTR
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Production last month:
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Production last minute:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{RAW_STRING}{BLACK} ({COMMA}% transported)
-STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centre the main view on industry location. Ctrl+Click to open a new viewport on industry location
+STR_INDUSTRY_VIEW_TRANSPORTED_EXTENDED                          :{BLACK}Rate: {COMMA} {BLUE}Waiting: {COMMA} {YELLOW}Produced: {COMMA} {GREEN}Distributed: {COMMA}
+STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :Produced {COMMA} units of cargo
 STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Cargo Graph
 STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Shows the graph of industry cargo history
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Production level: {YELLOW}{COMMA}%

@@ -564,7 +564,6 @@ void ShowMwcAnimation(int x, int y, int z, int blame)
  */
 void ShowDebugTextAnimation(int x, int y, int z, StringID msg, StringID sParam, int iParam, int iParam2)
 {
-	return;
 	Point pt = RemapCoords(x, y, z);
 	if (sParam == 0) {
 		AddTextEffect(GetEncodedString(msg), pt.x, pt.y, Ticks::DAY_TICKS, TE_RISING);

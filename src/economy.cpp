@@ -1174,6 +1174,7 @@ static void TriggerIndustryProduction(Industry *i)
 
 	TriggerIndustryRandomisation(i, IndustryRandomTrigger::CargoReceived);
 	TriggerIndustryAnimation(i, IndustryAnimationTrigger::CargoReceived);
+	SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 }
 
 /**

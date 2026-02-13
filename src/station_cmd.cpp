@@ -441,7 +441,6 @@ void Station::UpdateVirtCoord()
 	if (this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 
 	this->sign.UpdatePosition(pt.x, pt.y, GetString(STR_VIEWPORT_STATION, this->index, this->facilities), GetString(STR_STATION_NAME, this->index, this->facilities));
-	//this->cargoSign.UpdatePosition(pt.x, pt.y - 64, "ddd" + this->GetCargoWaitingSignString() + "ddd", "");
 
 	_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
 
@@ -4678,7 +4677,7 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 		amount *= first_station->goods[cargo].rating + 1;
 		Tile t = first_station->xy;
 		if (std::find(townCargoIndices.begin(), townCargoIndices.end(), cargo) == townCargoIndices.end()) {
-			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, TileY(t) * TILE_SIZE, GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, amount >> 8, -1);
+			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, TileY(t) * TILE_SIZE + (cargo * 8), GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, amount >> 8, -1);
 		}
 		return UpdateStationWaiting(first_station, cargo, amount, source);
 	}
@@ -4698,15 +4697,11 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 		}
 		company_sum[owner] += rating;
 	}
-	Debug(misc, 0, "Best rating overall: {}", best_rating);
-	Debug(misc, 0, "Sum of co bests: {}", best_sum);
 
 
 	/* From now we'll calculate with fractional cargo amounts.
 	 * First determine how much cargo we really have. */
 	amount *= best_rating + 1;
-
-	Debug(misc, 0, "Fractions to distribute: {}", amount);
 
 	uint moving = 0;
 	for (auto &p : used_stations) {
@@ -4714,7 +4709,6 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 		/* Multiply the amount by (company best / sum of best for each company) to get cargo allocated to a company
 		 * and by (station rating / sum of ratings in a company) to get the result for a single station. */
 		p.second = amount * company_best[owner] * p.first->goods[cargo].rating / best_sum / company_sum[owner];
-		Debug(misc, 0, "Distributed to {}: {}", p.first->name, p.second);
 
 		moving += p.second;
 	}
@@ -4728,7 +4722,6 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 		assert(amount - moving <= used_stations.size());
 		for (uint i = 0; i < amount - moving; i++) {
 			used_stations[i].second++;
-			Debug(misc, 0, "Topped off {}: {}", used_stations[i].first->name, used_stations[i].second);
 		}
 	}
 
@@ -4736,7 +4729,7 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 	for (auto &p : used_stations) {
 		if (std::find(townCargoIndices.begin(), townCargoIndices.end(), cargo) == townCargoIndices.end()) {
 			Tile t = p.first->xy;
-			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, TileY(t) * TILE_SIZE, GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, p.second >> 8, -1);
+			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, (TileY(t) * TILE_SIZE) + (cargo * 8), GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, p.second >> 8, -1);
 		}
 		moved += UpdateStationWaiting(p.first, cargo, p.second, source);
 	}

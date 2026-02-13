@@ -946,6 +946,8 @@ public:
 
 			DrawString(ir.Indent(label_indent + (this->editable == EA_RATE ? SETTING_BUTTON_WIDTH + WidgetDimensions::scaled.hsep_normal : 0), rtl).Translate(0, text_y_offset),
 				GetString(STR_INDUSTRY_VIEW_TRANSPORTED, p.cargo, p.history[LAST_MONTH].production, suffix.text, ToPercent8(p.history[LAST_MONTH].PctTransported())));
+			ir.top += line_height;
+			DrawString(ir, GetString(STR_INDUSTRY_VIEW_TRANSPORTED_EXTENDED, p.rate, p.waiting, p.history[THIS_MONTH].production, p.history[THIS_MONTH].transported));
 			/* Let's put out those buttons.. */
 			if (this->editable == EA_RATE) {
 				DrawArrowButtons(ir.Indent(label_indent, rtl).WithWidth(SETTING_BUTTON_WIDTH, rtl).left, ir.top + button_y_offset, COLOUR_YELLOW, (this->clicked_line == IL_RATE1 + (&p - i->produced.data())) ? this->clicked_button : 0,
