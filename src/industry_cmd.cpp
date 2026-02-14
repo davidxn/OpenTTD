@@ -541,7 +541,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 			uint am = MoveGoodsToStation(p.cargo, cw, {i->index, SourceType::Industry}, i->stations_near, i->exclusive_consumer);
 			p.history[THIS_MONTH].transported += am;
 			TileIndex t = i->location.tile;
-			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, TileY(t) * TILE_SIZE + (p.cargo * 8), GetTileZ(t), STR_ERROR_BMPMAP, CargoSpec::Get(p.cargo)->name, am, cw);
+			ShowDebugTextAnimation(TileX(t) * TILE_SIZE - 10, TileY(t) * TILE_SIZE - 10 + (p.cargo * 8), GetTileZ(t), STR_ERROR_BMPMAP, CargoSpec::Get(p.cargo)->name, am, cw);
 
 			moved_cargo |= (am != 0);
 		}
@@ -2865,6 +2865,7 @@ static void ReportNewsProductionChangeIndustry(Industry *ind, CargoType cargo, i
 
 static const uint PERCENT_TRANSPORTED_60 = 153;
 static const uint PERCENT_TRANSPORTED_80 = 204;
+static const uint PERCENT_TRANSPORTED_95 = 243;
 
 /**
  * Change industry production or do closure
@@ -2944,7 +2945,9 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 				new_prod = old_prod = p.rate;
 
 				/* 1 in 22 chance to change production rate, randomly up/down depending on percent transported last month */
-				if (Chance16I(1, 22, r >> 16)) {
+				if (p.history[LAST_MONTH].PctTransported() > PERCENT_TRANSPORTED_95) {
+					new_prod += std::max(((RandomRange(50) + 10) * old_prod) >> 8, 1U);
+				} else if (Chance16I(1, 22, r >> 16)) {
 					int prod_change_direction;
 					if (only_decrease) {
 						prod_change_direction = -1;
@@ -2969,10 +2972,10 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 				if (i->ctlflags.Test(IndustryControlFlag::NoProductionIncrease) && new_prod > old_prod) continue;
 
 				/* Do not stop closing the industry when it has the lowest possible production rate */
-				if (new_prod == old_prod && old_prod > 1) {
-					closeit = false;
-					continue;
-				}
+				//if (new_prod == old_prod && old_prod > 1) {
+				//	closeit = false;
+				//	continue;
+				//}
 
 				percent = (old_prod == 0) ? 100 : (new_prod * 100 / old_prod - 100);
 				p.rate = new_prod;

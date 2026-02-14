@@ -3746,7 +3746,7 @@ STR_LOCAL_AUTHORITY_CAPTION                                     :{WHITE}{TOWN} l
 STR_LOCAL_AUTHORITY_ZONE                                        :{BLACK}Zone
 STR_LOCAL_AUTHORITY_ZONE_TOOLTIP                                :{BLACK}Show zone within local authority boundaries
 STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}Transport company ratings:
-STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
+STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING} ({COMMA})
 STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}Actions available:
 STR_LOCAL_AUTHORITY_ACTIONS_TOOLTIP                             :{BLACK}List of things to do at this town - click on item for more details
 STR_LOCAL_AUTHORITY_DO_IT_BUTTON                                :{BLACK}Do it

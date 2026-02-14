@@ -188,7 +188,7 @@ public:
 				}
 
 				int rating = this->town->ratings[c->index];
-				DrawString(text.left, text.right, text.top + text_y_offset, GetString(STR_LOCAL_AUTHORITY_COMPANY_RATING, c->index, c->index, GetRatingString(rating)));
+				DrawString(text.left, text.right, text.top + text_y_offset, GetString(STR_LOCAL_AUTHORITY_COMPANY_RATING, c->index, c->index, GetRatingString(rating), rating));
 				text.top += this->resize.step_height;
 			}
 		}
