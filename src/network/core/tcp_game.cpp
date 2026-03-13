@@ -5,9 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file tcp_game.cpp Basic functions to receive and send TCP packets for game purposes.
- */
+/** @file tcp_game.cpp Basic functions to receive and send TCP packets for game purposes. */
 
 #include "../../stdafx.h"
 
@@ -21,7 +19,7 @@
 
 #include "../../safeguards.h"
 
-static std::vector<std::unique_ptr<NetworkGameSocketHandler>> _deferred_deletions;
+static std::vector<std::unique_ptr<NetworkGameSocketHandler>> _deferred_deletions; ///< NetworkGameSocketHandler that still need to be deleted.
 
 /**
  * Create a new socket for the game connection.
@@ -35,9 +33,9 @@ NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : NetworkTCPSocketH
  *  A socket can make errors. When that happens this handles what to do.
  * For clients: close connection and drop back to main-menu
  * For servers: close connection and that is it
- * @return the new status
+ * @copydoc NetworkTCPSocketHandler::CloseConnection
  */
-NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool)
+NetworkRecvStatus NetworkGameSocketHandler::CloseConnection([[maybe_unused]] bool error)
 {
 	/* Clients drop back to the main menu */
 	if (!_network_server && _networking) {
@@ -60,13 +58,7 @@ NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool)
  */
 NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 {
-	PacketGameType type = (PacketGameType)p.Recv_uint8();
-
-	if (this->HasClientQuit()) {
-		Debug(net, 0, "[tcp/game] Received invalid packet from client {}", this->client_id);
-		this->CloseConnection();
-		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
-	}
+	PacketGameType type = static_cast<PacketGameType>(p.Recv_uint8());
 
 	this->last_packet = std::chrono::steady_clock::now();
 
@@ -193,12 +185,14 @@ NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MOVE(Packet &) { retu
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_MOVE); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_CONFIG_UPDATE); }
 
+/** Mark this socket handler for deletion, once iterating the socket handlers is done. */
 void NetworkGameSocketHandler::DeferDeletion()
 {
 	_deferred_deletions.emplace_back(this);
 	this->is_pending_deletion = true;
 }
 
+/** Actually delete the socket handlers that were marked for deletion. */
 /* static */ void NetworkGameSocketHandler::ProcessDeferredDeletions()
 {
 	/* Calls deleter on all items */

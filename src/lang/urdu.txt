@@ -1204,6 +1204,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :ہموار
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :رف
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :بہت رف
 
+###length 4
+
 
 
 STR_CONFIG_SETTING_TREE_PLACER                                  :درخت لگانے کا طریقہ: {STRING}
@@ -1713,15 +1715,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}آپ س�
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}اب تک {BYTES} ڈاون لوڈ ہوئی ہیں
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}اب تک {BYTES} / {BYTES} ڈاون لوڈ ہوئی ہیں
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) رابطہ کر رہے ہیں۔ ۔ ۔
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) اختیار دے رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) انتظار کر رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) نقشہ ڈاون لوڈ کر رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) معلومات پر کام کر رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) رجسٹر کر رہے ہیں ۔ ۔ ۔
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}کھیل کے بارے میں معلومات حاصل کر رہے ہیں ۔ ۔ ۔
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}کمپنی کے بارے میں معلومات حاصل کر رہے ہیں ۔ ۔ ۔
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}رابطہ منقطع کریں
 
@@ -1977,6 +1977,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}پلیٹ
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}ریلوے اسٹیشن کی لمبائی منتخب کریں
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}کھینچ کر رکھ دیں
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}کھینچ کر رکھ کر اسٹیشن تعمیر کریں
+
+
 
 
 
@@ -2457,6 +2459,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :{CARGO_LIST} ک
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}پہنچ: {GOLD}{COMMA} ٹائلیں
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}ہوائی جہاز کی قسم: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES
@@ -2532,6 +2536,7 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 
 # Engine preview window
+
 
 
 

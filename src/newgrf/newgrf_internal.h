@@ -35,11 +35,35 @@ struct GrfChangeInfoHandler {
 /** GRF action handler */
 template <uint8_t TAction>
 struct GrfActionHandler {
+	/**
+	 * Implementation of the \ref GrfLoadingStage::FileScan stage of this action.
+	 * @param buf The buffer containing the sprite data.
+	 */
 	static void FileScan(ByteReader &buf);
+	/**
+	 * Implementation of the \ref GrfLoadingStage::SafetyScan stage of this action.
+	 * @param buf The buffer containing the sprite data.
+	 */
 	static void SafetyScan(ByteReader &buf);
+	/**
+	 * Implementation of the \ref GrfLoadingStage::LabelScan stage of this action.
+	 * @param buf The buffer containing the sprite data.
+	 */
 	static void LabelScan(ByteReader &buf);
+	/**
+	 * Implementation of the \ref GrfLoadingStage::Init stage of this action.
+	 * @param buf The buffer containing the sprite data.
+	 */
 	static void Init(ByteReader &buf);
+	/**
+	 * Implementation of the \ref GrfLoadingStage::Reserve stage of this action.
+	 * @param buf The buffer containing the sprite data.
+	 */
 	static void Reserve(ByteReader &buf);
+	/**
+	 * Implementation of the \ref GrfLoadingStage::Activation stage of this action.
+	 * @param buf The buffer containing the sprite data.
+	 */
 	static void Activation(ByteReader &buf);
 };
 
@@ -71,7 +95,7 @@ public:
 	/* Kind of return values when processing certain actions */
 	int skip_sprites;         ///< Number of pseudo sprites to skip before processing the next one. (-1 to skip to end of file)
 
-	/* Currently referenceable spritegroups */
+	/** Currently referenceable spritegroups. */
 	std::array<const SpriteGroup *, MAX_SPRITEGROUP + 1> spritegroups{};
 
 	/** Clear temporary data before processing the next file in the current loading stage */

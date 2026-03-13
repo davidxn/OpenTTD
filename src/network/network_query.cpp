@@ -36,6 +36,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::CloseConnection(NetworkRecvStat
 
 /**
  * Check the connection's state, i.e. is the connection still up?
+ * @return \c true if the connection remains valid, otherwise it will be closed.
  */
 bool QueryNetworkGameSocketHandler::CheckConnection()
 {
@@ -76,6 +77,7 @@ void QueryNetworkGameSocketHandler::Send()
 
 /**
  * Query the server for server information.
+ * @return The status the network should have.
  */
 NetworkRecvStatus QueryNetworkGameSocketHandler::SendGameInfo()
 {
@@ -134,15 +136,15 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet
 
 NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet &p)
 {
-	NetworkErrorCode error = (NetworkErrorCode)p.Recv_uint8();
+	NetworkErrorCode error = static_cast<NetworkErrorCode>(p.Recv_uint8());
 
 	Debug(net, 9, "Query::Receive_SERVER_ERROR(): error={}", error);
 
 	NetworkGame *item = NetworkGameListAddItem(this->connection_string);
 
-	if (error == NETWORK_ERROR_NOT_EXPECTED) {
+	if (error == NetworkErrorCode::NotExpected) {
 		/* If we query a server that is 1.11.1 or older, we get an
-		 * NETWORK_ERROR_NOT_EXPECTED on requesting the game info. Show to the
+		 * NetworkErrorCode::NotExpected on requesting the game info. Show to the
 		 * user this server is too old to query.
 		 */
 		item->status = NGLS_TOO_OLD;

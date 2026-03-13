@@ -47,6 +47,7 @@
 #include "newgrf/newgrf_stringmapping.h"
 
 #include "table/strings.h"
+#include "table/pricebase.h"
 
 #include "safeguards.h"
 
@@ -81,7 +82,7 @@ TypedIndexContainer<std::vector<GRFTempEngineData>, EngineID> _gted;  ///< Tempo
  * Debug() function dedicated to newGRF debugging messages
  * Function is essentially the same as Debug(grf, severity, ...) with the
  * addition of file:line information when parsing grf files.
- * NOTE: for the above reason(s) GrfMsg() should ONLY be used for
+ * @note for the above reason(s) GrfMsg() should ONLY be used for
  * loading/parsing grf files, not for runtime debug messages as there
  * is no file information available during that time.
  * @param severity debugging severity level, see debug.h
@@ -120,7 +121,10 @@ static GRFFile *GetFileByFilename(const std::string &filename)
 	return nullptr;
 }
 
-/** Reset all NewGRFData that was used only while processing data */
+/**
+ * Reset all NewGRFData that was used only while processing data.
+ * @param gf The file to reset the data for.
+ */
 static void ClearTemporaryNewGRFData(GRFFile *gf)
 {
 	gf->labels.clear();
@@ -263,7 +267,7 @@ Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t internal_id
 	size_t engine_pool_size = Engine::GetPoolSize();
 
 	/* ... it's not, so create a new one based off an existing engine */
-	Engine *e = new Engine(type, internal_id);
+	Engine *e = Engine::Create(type, internal_id);
 	e->grf_prop.SetGRFFile(file);
 
 	/* Reserve the engine slot */
@@ -311,6 +315,8 @@ EngineID GetNewEngineID(const GRFFile *file, VehicleType type, uint16_t internal
 
 /**
  * Translate the refit mask. refit_mask is uint32_t as it has not been mapped to CargoTypes.
+ * @param refit_mask The bitmask to convert.
+ * @return The converted CargoTypes.
  */
 CargoTypes TranslateRefitMask(uint32_t refit_mask)
 {
@@ -333,14 +339,14 @@ void ConvertTTDBasePrice(uint32_t base_pointer, std::string_view error_location,
 {
 	/* Special value for 'none' */
 	if (base_pointer == 0) {
-		*index = INVALID_PRICE;
+		*index = Price::Invalid;
 		return;
 	}
 
 	static const uint32_t start = 0x4B34; ///< Position of first base price
 	static const uint32_t size  = 6;      ///< Size of each base price record
 
-	if (base_pointer < start || (base_pointer - start) % size != 0 || (base_pointer - start) / size >= PR_END) {
+	if (base_pointer < start || (base_pointer - start) % size != 0 || (base_pointer - start) / size >= to_underlying(Price::End)) {
 		GrfMsg(1, "{}: Unsupported running cost base 0x{:04X}, ignoring", error_location, base_pointer);
 		return;
 	}
@@ -518,17 +524,17 @@ void ResetPersistentNewGRFData()
  * @param grffile GRF file.
  * @returns Readonly cargo translation table to use.
  */
- std::span<const CargoLabel> GetCargoTranslationTable(const GRFFile &grffile)
- {
-	 /* Always use the translation table if it's installed. */
-	 if (!grffile.cargo_list.empty()) return grffile.cargo_list;
+std::span<const CargoLabel> GetCargoTranslationTable(const GRFFile &grffile)
+{
+	/* Always use the translation table if it's installed. */
+	if (!grffile.cargo_list.empty()) return grffile.cargo_list;
 
-	 /* Pre-v7 use climate-dependent "slot" table. */
-	 if (grffile.grf_version < 7) return GetClimateDependentCargoTranslationTable();
+	/* Pre-v7 use climate-dependent "slot" table. */
+	if (grffile.grf_version < 7) return GetClimateDependentCargoTranslationTable();
 
-	 /* Otherwise use climate-independent "bitnum" table. */
-	 return GetClimateIndependentCargoTranslationTable();
- }
+	/* Otherwise use climate-independent "bitnum" table. */
+	return GetClimateIndependentCargoTranslationTable();
+}
 
 /**
  * Construct the Cargo Mapping
@@ -1214,12 +1220,12 @@ struct InvokeGrfActionHandler {
 	static void Invoke(ByteReader &buf, GrfLoadingStage stage)
 	{
 		switch (stage) {
-			case GLS_FILESCAN: GrfActionHandler<TAction>::FileScan(buf); break;
-			case GLS_SAFETYSCAN: GrfActionHandler<TAction>::SafetyScan(buf); break;
-			case GLS_LABELSCAN: GrfActionHandler<TAction>::LabelScan(buf); break;
-			case GLS_INIT: GrfActionHandler<TAction>::Init(buf); break;
-			case GLS_RESERVE: GrfActionHandler<TAction>::Reserve(buf); break;
-			case GLS_ACTIVATION: GrfActionHandler<TAction>::Activation(buf); break;
+			case GrfLoadingStage::FileScan: GrfActionHandler<TAction>::FileScan(buf); break;
+			case GrfLoadingStage::SafetyScan: GrfActionHandler<TAction>::SafetyScan(buf); break;
+			case GrfLoadingStage::LabelScan: GrfActionHandler<TAction>::LabelScan(buf); break;
+			case GrfLoadingStage::Init: GrfActionHandler<TAction>::Init(buf); break;
+			case GrfLoadingStage::Reserve: GrfActionHandler<TAction>::Reserve(buf); break;
+			case GrfLoadingStage::Activation: GrfActionHandler<TAction>::Activation(buf); break;
 			default: NOT_REACHED();
 		}
 	}
@@ -1305,7 +1311,7 @@ static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, Spr
 		return;
 	}
 
-	if (stage == GLS_INIT || stage == GLS_ACTIVATION) {
+	if (stage == GrfLoadingStage::Init || stage == GrfLoadingStage::Activation) {
 		/* We need the sprite offsets in the init stage for NewGRF sounds
 		 * and in the activation stage for real sprites. */
 		ReadGRFSpriteOffsets(file);
@@ -1401,11 +1407,11 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 	 * During activation, only actions 0, 1, 2, 3, 4, 5, 7, 8, 9, 0A and 0B are
 	 * carried out.  All others are ignored, because they only need to be
 	 * processed once at initialization.  */
-	if (stage != GLS_FILESCAN && stage != GLS_SAFETYSCAN && stage != GLS_LABELSCAN) {
+	if (stage != GrfLoadingStage::FileScan && stage != GrfLoadingStage::SafetyScan && stage != GrfLoadingStage::LabelScan) {
 		_cur_gps.grffile = GetFileByFilename(filename);
 		if (_cur_gps.grffile == nullptr) UserError("File '{}' lost in cache.\n", filename);
-		if (stage == GLS_RESERVE && config.status != GCS_INITIALISED) return;
-		if (stage == GLS_ACTIVATION && !config.flags.Test(GRFConfigFlag::Reserved)) return;
+		if (stage == GrfLoadingStage::Reserve && config.status != GCS_INITIALISED) return;
+		if (stage == GrfLoadingStage::Activation && !config.flags.Test(GRFConfigFlag::Reserved)) return;
 	}
 
 	bool needs_palette_remap = config.palette & GRFP_USE_MASK;
@@ -1478,7 +1484,6 @@ static void ActivateOldTramDepot()
  */
 static void FinalisePriceBaseMultipliers()
 {
-	extern const PriceBaseSpec _price_base_specs[];
 	/** Features, to which '_grf_id_overrides' applies. Currently vehicle features only. */
 	static constexpr GrfSpecFeatures override_features{GSF_TRAINS, GSF_ROADVEHICLES, GSF_SHIPS, GSF_AIRCRAFT};
 
@@ -1508,7 +1513,7 @@ static void FinalisePriceBaseMultipliers()
 		source.grf_features.Set(features);
 		dest.grf_features.Set(features);
 
-		for (Price p = PR_BEGIN; p < PR_END; p++) {
+		for (Price p = Price::Begin; p < Price::End; p++) {
 			/* No price defined -> nothing to do */
 			if (!features.Test(_price_base_specs[p].grf_feature) || source.price_base_multipliers[p] == INVALID_PRICE_MODIFIER) continue;
 			Debug(grf, 3, "'{}' overrides price base multiplier {} of '{}'", source.filename, p, dest.filename);
@@ -1526,7 +1531,7 @@ static void FinalisePriceBaseMultipliers()
 		source.grf_features.Set(features);
 		dest.grf_features.Set(features);
 
-		for (Price p = PR_BEGIN; p < PR_END; p++) {
+		for (Price p = Price::Begin; p < Price::End; p++) {
 			/* Already a price defined -> nothing to do */
 			if (!features.Test(_price_base_specs[p].grf_feature) || dest.price_base_multipliers[p] != INVALID_PRICE_MODIFIER) continue;
 			Debug(grf, 3, "Price base multiplier {} from '{}' propagated to '{}'", p, source.filename, dest.filename);
@@ -1544,7 +1549,7 @@ static void FinalisePriceBaseMultipliers()
 		source.grf_features.Set(features);
 		dest.grf_features.Set(features);
 
-		for (Price p = PR_BEGIN; p < PR_END; p++) {
+		for (Price p = Price::Begin; p < Price::End; p++) {
 			if (!features.Test(_price_base_specs[p].grf_feature)) continue;
 			if (source.price_base_multipliers[p] != dest.price_base_multipliers[p]) {
 				Debug(grf, 3, "Price base multiplier {} from '{}' propagated to '{}'", p, dest.filename, source.filename);
@@ -1557,9 +1562,9 @@ static void FinalisePriceBaseMultipliers()
 	for (auto &file : _grf_files) {
 		if (file.grf_version >= 8) continue;
 		PriceMultipliers &price_base_multipliers = file.price_base_multipliers;
-		for (Price p = PR_BEGIN; p < PR_END; p++) {
+		for (Price p = Price::Begin; p < Price::End; p++) {
 			Price fallback_price = _price_base_specs[p].fallback_price;
-			if (fallback_price != INVALID_PRICE && price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
+			if (fallback_price != Price::Invalid && price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
 				/* No price multiplier has been set.
 				 * So copy the multiplier from the fallback price, maybe a multiplier was set there. */
 				price_base_multipliers[p] = price_base_multipliers[fallback_price];
@@ -1570,7 +1575,7 @@ static void FinalisePriceBaseMultipliers()
 	/* Decide local/global scope of price base multipliers */
 	for (auto &file : _grf_files) {
 		PriceMultipliers &price_base_multipliers = file.price_base_multipliers;
-		for (Price p = PR_BEGIN; p < PR_END; p++) {
+		for (Price p = Price::Begin; p < Price::End; p++) {
 			if (price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
 				/* No multiplier was set; set it to a neutral value */
 				price_base_multipliers[p] = 0;
@@ -1805,14 +1810,14 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 	/* Load newgrf sprites
 	 * in each loading stage, (try to) open each file specified in the config
 	 * and load information from it. */
-	for (GrfLoadingStage stage = GLS_LABELSCAN; stage <= GLS_ACTIVATION; stage++) {
+	for (GrfLoadingStage stage = GrfLoadingStage::LabelScan; stage <= GrfLoadingStage::Activation; stage++) {
 		/* Set activated grfs back to will-be-activated between reservation- and activation-stage.
 		 * This ensures that action7/9 conditions 0x06 - 0x0A work correctly. */
 		for (const auto &c : _grfconfig) {
 			if (c->status == GCS_ACTIVATED) c->status = GCS_INITIALISED;
 		}
 
-		if (stage == GLS_RESERVE) {
+		if (stage == GrfLoadingStage::Reserve) {
 			static const std::pair<uint32_t, uint32_t> default_grf_overrides[] = {
 				{ std::byteswap(0x44442202), std::byteswap(0x44440111) }, // UKRS addons modifies UKRS
 				{ std::byteswap(0x6D620402), std::byteswap(0x6D620401) }, // DBSetXL ECS extension modifies DBSetXL
@@ -1829,7 +1834,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		_cur_gps.stage = stage;
 		for (const auto &c : _grfconfig) {
 			if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND) continue;
-			if (stage > GLS_INIT && c->flags.Test(GRFConfigFlag::InitOnly)) continue;
+			if (stage > GrfLoadingStage::Init && c->flags.Test(GRFConfigFlag::InitOnly)) continue;
 
 			Subdirectory subdir = num_grfs < num_baseset ? BASESET_DIR : NEWGRF_DIR;
 			if (!FioCheckFileExists(c->filename, subdir)) {
@@ -1838,7 +1843,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 				continue;
 			}
 
-			if (stage == GLS_LABELSCAN) InitNewGRFFile(*c);
+			if (stage == GrfLoadingStage::LabelScan) InitNewGRFFile(*c);
 
 			if (!c->flags.Test(GRFConfigFlag::Static) && !c->flags.Test(GRFConfigFlag::System)) {
 				if (num_non_static == NETWORK_MAX_GRF_COUNT) {
@@ -1853,15 +1858,15 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 			num_grfs++;
 
 			LoadNewGRFFile(*c, stage, subdir, false);
-			if (stage == GLS_RESERVE) {
+			if (stage == GrfLoadingStage::Reserve) {
 				c->flags.Set(GRFConfigFlag::Reserved);
-			} else if (stage == GLS_ACTIVATION) {
+			} else if (stage == GrfLoadingStage::Activation) {
 				c->flags.Reset(GRFConfigFlag::Reserved);
 				assert(GetFileByGRFID(c->ident.grfid) == _cur_gps.grffile);
 				ClearTemporaryNewGRFData(_cur_gps.grffile);
 				BuildCargoTranslationMap();
 				Debug(sprite, 2, "LoadNewGRF: Currently {} sprites are loaded", _cur_gps.spriteid);
-			} else if (stage == GLS_INIT && c->flags.Test(GRFConfigFlag::InitOnly)) {
+			} else if (stage == GrfLoadingStage::Init && c->flags.Test(GRFConfigFlag::InitOnly)) {
 				/* We're not going to activate this, so free whatever data we allocated */
 				ClearTemporaryNewGRFData(_cur_gps.grffile);
 			}

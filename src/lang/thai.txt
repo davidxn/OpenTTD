@@ -1367,6 +1367,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :ราบเร
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :หยาบ
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :หยาบมาก
 
+###length 4
+
 
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :จำนวนแม่น้ำ: {STRING}
 
@@ -2090,15 +2092,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} cl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :ดาวน์โหลดไปแล้ว {BLACK}{BYTES}
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} ดาวโหลดไปแล้วทั้งสิ้น
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) กำลังเชื่อมต่อ...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) กำลังตรวจสอบการเข้าร่วม...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) กรุณารอ...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) ดาวโหลดแผนที่...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) ประมวลข้อมูล...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) ลงทะเบียน...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}รวบรวมข้อมูลเกม...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}รวบรวมข้อมูลบริษัท...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}ตัดการเชื่อมต่อ
 
@@ -2400,6 +2400,8 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}สร�
 
 
 
+
+
 STR_STATION_CLASS_DFLT                                          :สถานีมาตรฐาน
 STR_STATION_CLASS_WAYP                                          :จุดตรวจ
 
@@ -2642,7 +2644,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}ระ�
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}ชื่อท่าอากาศยาน: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}ชื่อท่าอากาศยาน: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}สินค้าที่รับ: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}สินค้าที่รับ: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}ประเภทของถนน: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}ประเภทรถราง: {LTBLUE}{STRING}
@@ -3365,7 +3367,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}ท่�
 # Industry directory
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- ไม่มี -
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}ชื่อของอุตสาหกรรม - คลิ๊กที่ชื่อเพื่อไปยังจุดศูนย์กลาง
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}ผลผลิตที่ได้: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :ไม่มี
@@ -3378,7 +3380,7 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}กด�
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}ระดับการผลิต: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}อุตสาหกรรมนี้ได้มีการประกาศปิดตัวลงอย่างเป็นทางการ!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}ต้องการ: {YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}ต้องการ: {YELLOW}{STRING}
 
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}ปรับเปลี่ยนปริมาณผลผลิต (ระหว่าง 8 ถึง 2040)
@@ -3488,6 +3490,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :ทั้งห
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}กำลังลากจูงสูงสุด: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}พิสัยทำการ: {GOLD}{COMMA} ช่อง
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}ชนิดของเครื่องบิน: {GOLD}{STRING}
+
+# Vehicle sort details
 
 ###length 3
 
@@ -3638,6 +3642,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}คุ�
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}ข้อความจากผู้ผลิตยานพาหนะ
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}เราได้ออกแบบ {STRING} ใหม่ - หากคุณต้องการที่จะนำไปทดลองใช้ เราจะให้คุณนำไปใช้งานก่อนที่จะนำออกไปจำหน่ายในตลาดปกติ{}คุณต้องการนำไปทดลองใช้หรือไม่ ?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :หัวรถจักร
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :หัวรถจักรของรถไฟฟ้า
@@ -3828,7 +3833,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}แส�
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}แสดงความจุรวมทั้งหมดของขบวนรถ
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}แสดงความจุรวมทั้งหมดของขบวนรถ แยกตามประเภทสินค้า
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}ความจุ: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}ความจุ: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (ดัดแปลง)
@@ -4271,7 +4276,6 @@ STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}ไม�
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}ไม่สามารถเปลี่ยนชื่อเมืองได้...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}ไม่สามารถสร้างเมืองที่นี่ได้...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}ไม่สามารถขยายเมืองได้
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... ติดกับขอบแผนที่มากเกินไป
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... ใกล้กับเมืองอื่นมากเกินไป
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... มีเมืองมากเกินไป
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... มีพื้นที่บนแผนที่ไม่มากพอ

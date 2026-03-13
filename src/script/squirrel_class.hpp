@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file squirrel_class.hpp Defines templates for converting C++ classes to Squirrel classes */
+/** @file squirrel_class.hpp Defines templates for converting C++ classes to Squirrel classes. */
 
 #ifndef SQUIRREL_CLASS_HPP
 #define SQUIRREL_CLASS_HPP
@@ -31,6 +31,11 @@ public:
 	 * @note If you define params, make sure that the first param is always 'x',
 	 *  which is the 'this' inside the function. This is hidden from the rest
 	 *  of the code, but without it calling your function will fail!
+	 * @param engine The engine to add the function to.
+	 * @param function_proc The actual function to call.
+	 * @param function_name The name of the function.
+	 * @param params String describing the types of the parameters.
+	 * @param suspendable Whether this function can be suspended, or not.
 	 */
 	template <typename Func>
 	void DefSQMethod(Squirrel &engine, Func function_proc, std::string_view function_name, std::string_view params = {}, bool suspendable = false)
@@ -41,6 +46,10 @@ public:
 
 	/**
 	 * This defines a method inside a class for Squirrel, which has access to the 'engine' (experts only!).
+	 * @param engine The engine to add the function to.
+	 * @param function_proc The actual function to call.
+	 * @param function_name The name of the function.
+	 * @param suspendable Whether this function can be suspended, or not.
 	 */
 	template <typename Func>
 	void DefSQAdvancedMethod(Squirrel &engine, Func function_proc, std::string_view function_name, bool suspendable = false)
@@ -54,6 +63,11 @@ public:
 	 * @note If you define params, make sure that the first param is always 'x',
 	 *  which is the 'this' inside the function. This is hidden from the rest
 	 *  of the code, but without it calling your function will fail!
+	 * @param engine The engine to add the function to.
+	 * @param function_proc The actual function to call.
+	 * @param function_name The name of the function.
+	 * @param params String describing the types of the parameters.
+	 * @param suspendable Whether this function can be suspended, or not.
 	 */
 	template <typename Func>
 	void DefSQStaticMethod(Squirrel &engine, Func function_proc, std::string_view function_name, std::string_view params = {}, bool suspendable = false)
@@ -64,6 +78,10 @@ public:
 
 	/**
 	 * This defines a static method inside a class for Squirrel, which has access to the 'engine' (experts only!).
+	 * @param engine The engine to add the function to.
+	 * @param function_proc The actual function to call.
+	 * @param function_name The name of the function.
+	 * @param suspendable Whether this function can be suspended, or not.
 	 */
 	template <typename Func>
 	void DefSQAdvancedStaticMethod(Squirrel &engine, Func function_proc, std::string_view function_name, bool suspendable = false)

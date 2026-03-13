@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file newgrf_badge.cpp Functionality for NewGRF badges. */
+/** @file newgrf_badge_gui.cpp GUI functionalities for NewGRF badges. */
 
 #include "stdafx.h"
 
@@ -203,6 +203,17 @@ public:
 		if (dim.width > 0) dim.width -= WidgetDimensions::scaled.hsep_normal;
 	}
 
+	/** @copydoc DropDownListItem::FilterText */
+	void FilterText(StringFilter &string_filter) const override
+	{
+		for (const BadgeID &badge_index : this->badges) {
+			const Badge *badge = GetBadge(badge_index);
+			if (badge->name == STR_NULL) continue;
+			string_filter.AddLine(GetString(badge->name));
+		}
+		this->TBase::FilterText(string_filter);
+	}
+
 	uint Height() const override
 	{
 		return std::max<uint>(this->dim.height, this->TBase::Height());
@@ -370,7 +381,7 @@ DropDownList BuildBadgeClassConfigurationList(const GUIBadgeClasses &gui_classes
 		if (!badge->flags.Test(BadgeFlag::HasText)) continue;
 
 		const auto [config, _] = GetBadgeClassConfigItem(gui_classes.GetFeature(), badge->label);
-		list.push_back(std::make_unique<DropDownListToggleItem>(config.show_filter, BADGE_CLICK_TOGGLE_FILTER, COLOUR_YELLOW, bg_colour, GetString(badge->name), (1U << 16) | badge_class_index.base()));
+		list.push_back(std::make_unique<DropDownListToggleItem>(config.show_filter, BADGE_CLICK_TOGGLE_FILTER, COLOUR_YELLOW, bg_colour, GetString(badge->name), badge_class_index.base()));
 	}
 
 	return list;
@@ -380,7 +391,8 @@ DropDownList BuildBadgeClassConfigurationList(const GUIBadgeClasses &gui_classes
  * Toggle badge class visibility.
  * @param feature Feature being used.
  * @param class_badge Class badge.
- * @param click Dropdown click result.
+ * @param click_result Dropdown click result.
+ * @param choices Configuration of the badge filters.
  */
 static void BadgeClassToggleVisibility(GrfSpecFeature feature, Badge &class_badge, int click_result, BadgeFilterChoices &choices)
 {
@@ -460,6 +472,7 @@ static void BadgeClassMoveNext(GrfSpecFeature feature, Badge &class_badge, uint 
  * @param columns Maximum column number permitted.
  * @param result Selected dropdown item value.
  * @param click_result Dropdown click result.
+ * @param choices Configuration of the badge filters.
  * @return true iff the caller should reinitialise their widgets.
  */
 bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result, BadgeFilterChoices &choices)
@@ -505,7 +518,7 @@ std::string NWidgetBadgeFilter::GetStringParameter(const BadgeFilterChoices &cho
 		return ::GetString(STR_BADGE_FILTER_ANY_LABEL, GetClassBadge(this->badge_class)->name);
 	}
 
-	return ::GetString(STR_BADGE_FILTER_IS_LABEL, GetClassBadge(it->first)->name, GetBadge(it->second)->name);
+	return ::GetString(GetBadge(it->second)->name);
 }
 
 /**
@@ -552,7 +565,7 @@ DropDownList NWidgetBadgeFilter::GetDropDownList(PaletteID palette) const
 /**
  * Add badge drop down filter widgets.
  * @param window Window that holds the container.
- * @param container Container widget index to hold filter widgets.
+ * @param container_id Container widget index to hold filter widgets.
  * @param widget Widget index to apply to first filter.
  * @param colour Background colour of widgets.
  * @param feature GRF feature for filters.

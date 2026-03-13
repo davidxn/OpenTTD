@@ -1599,6 +1599,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Полегат
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Стръмен
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Много стръмен
 
+###length 4
+
 STR_CONFIG_SETTING_VARIETY                                      :Разпределение на разнообразието: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Изберете дали картата да съдържа както планини, така и равнинни зони. Колкото по-голямо е разнообразието, толкова по-големи са разликите във височината между планинските и равнинните зони
 
@@ -2433,15 +2435,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} и
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} свалени досега
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} изтеглени
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Свързване..
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Оторизиране..
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Изчакване..
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Сваляне на карта..
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Обработка на данни..
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Регистриране..
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Сваляне на инфо за играта..
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Сваляне на инфо за компаниите..
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Изключване
 
@@ -2801,6 +2801,8 @@ STR_PICKER_MODE_SAVED                                           :Записан�
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Превключване показването само на записани обекти
 
 
+
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Изберане на тип станция за показване
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Изберете тип станция за изграждане. Ctrl+Click, за да добавите или премахнете от запазените елементи
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Избиране на клас междинни пунктове за показване
@@ -3091,7 +3093,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Клас
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Име на летището: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Име на поле на летище: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Приет товар: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Приет товар: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Тип релси: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Тип път: {LTBLUE}{STRING}
@@ -3949,12 +3951,12 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Индустрии({COMMA} от {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Отсъства -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% транспортирани){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% транспортирани)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} и още {NUM}...
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} и още {NUM}...
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Имена на индустриите - натиснете, за да центрирате камерата върху индустрията. Ctrl+Click отваря прозорец с нов изглед към индустрията
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Приеман товар {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Произведен товар: {SILVER}{STRING}
@@ -3970,9 +3972,9 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Цент
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Ниво на производство: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Индустрията обяви незабавна ликвидация!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Изисква: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Произвежда: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Изисква: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Произвежда: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Изисква:
 
@@ -4100,6 +4102,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Всичко о
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Макс. теглеща сила: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Обхват: {GOLD}{COMMA} полета
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Тип летателно средство: {GOLD}{STRING}
+
+# Vehicle sort details
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Всички типове товари
@@ -4261,6 +4265,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Иск�
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Съобщение от производител
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Създадохме нов {STRING} - интересувате ли се от ексклузивното право да използвате това ПС за една година, за да видим как то работи, преди да го пуснем на пазара за масова употреба?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :локомотив за двурелсов път
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :локомотив за електрифициран релсов път
@@ -4492,7 +4497,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Капа
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Общо товар
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Общ капацитет на влака, разделен по типове товар
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Капацитет: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Капацитет: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Преоборудване)
@@ -4977,7 +4982,6 @@ STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Не м�
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Градът не може да бъде преименуван
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Не може да се основе град тук...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Градът не може да се разрасне
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... прекалено близо до края на картата
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... прекалено близо до друг град
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... прекалено много градове
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... няма повече място на картата

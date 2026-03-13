@@ -39,7 +39,7 @@ private:
 
 public:
 	FreeTypeFontCache(FontSize fs, FT_Face face, int pixels);
-	~FreeTypeFontCache();
+	~FreeTypeFontCache() override;
 	void ClearFontCache() override;
 	GlyphID MapCharToGlyph(char32_t key, bool allow_fallback = true) override;
 	std::string GetFontName() override { return fmt::format("{}, {}", face->family_name, face->style_name); }
@@ -213,7 +213,8 @@ class FreeTypeFontCacheFactory : public FontCacheFactory {
 public:
 	FreeTypeFontCacheFactory() : FontCacheFactory("freetype", "FreeType font provider") {}
 
-	virtual ~FreeTypeFontCacheFactory()
+	/** Close the freetype library. */
+	~FreeTypeFontCacheFactory() override
 	{
 		FT_Done_FreeType(_ft_library);
 		_ft_library = nullptr;
@@ -225,6 +226,8 @@ public:
 	 * try to resolve the filename of the font using fontconfig, where the
 	 * format is 'font family name' or 'font family name, font style'.
 	 * @param fs The font size to load.
+	 * @param fonttype The type of font that is requested to be loaded.
+	 * @return The loaded font, or \c nullptr when none could be loaded.
 	 */
 	std::unique_ptr<FontCache> LoadFont(FontSize fs, FontType fonttype) const override
 	{

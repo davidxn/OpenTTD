@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file game_sl.cpp Handles the saveload part of the GameScripts */
+/** @file game_sl.cpp Handles the saveload part of the GameScripts. */
 
 #include "../stdafx.h"
 #include "../debug.h"
@@ -59,7 +59,7 @@ struct GSDTChunkHandler : ChunkHandler {
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(_game_script_desc, _game_script_sl_compat);
 
 		/* Free all current data */
-		GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME)->Change(std::nullopt);
+		GameConfig::GetConfig(GameConfig::ScriptSettingSource::ForceCurrentGame)->Change(std::nullopt);
 
 		if (SlIterateArray() == -1) return;
 
@@ -72,7 +72,7 @@ struct GSDTChunkHandler : ChunkHandler {
 			return;
 		}
 
-		GameConfig *config = GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME);
+		GameConfig *config = GameConfig::GetConfig(GameConfig::ScriptSettingSource::ForceCurrentGame);
 		if (!_game_saveload_name.empty()) {
 			config->Change(_game_saveload_name, _game_saveload_version, false);
 			if (!config->HasScript()) {
