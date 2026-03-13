@@ -4438,12 +4438,8 @@ void OnTick_Station()
 }
 
 /** Economy monthly loop for stations. */
-<<<<<<< HEAD
-static const IntervalTimer<TimerGameEconomy> _economy_stations_monthly({ TimerGameEconomy::MONTH, TimerGameEconomy::Priority::STATION }, [](auto) {
-=======
 static const IntervalTimer<TimerGameEconomy> _economy_stations_monthly({TimerGameEconomy::Trigger::Month, TimerGameEconomy::Priority::Station}, [](auto)
 {
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece
 	for (Station *st : Station::Iterate()) {
 		for (GoodsEntry &ge : st->goods) {
 			ge.status.Set(GoodsEntry::State::LastMonth, ge.status.Test(GoodsEntry::State::CurrentMonth));
@@ -4938,25 +4934,15 @@ static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_o
 		if (IsDriveThroughStopTile(tile)) {
 			/* Remove the drive-through road stop */
 			if (IsRoadWaypoint(tile)) {
-<<<<<<< HEAD
-				Command<CMD_REMOVE_FROM_ROAD_WAYPOINT>::Do({ DoCommandFlag::Execute, DoCommandFlag::Bankrupt }, tile, tile);
-			} else {
-				Command<CMD_REMOVE_ROAD_STOP>::Do({ DoCommandFlag::Execute, DoCommandFlag::Bankrupt }, tile, 1, 1, (GetStationType(tile) == StationType::Truck) ? RoadStopType::Truck : RoadStopType::Bus, false);
-=======
 				Command<Commands::RemoveFromRoadWaypoint>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, tile);
 			} else {
 				Command<Commands::RemoveRoadStop>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, 1, 1, (GetStationType(tile) == StationType::Truck) ? RoadStopType::Truck : RoadStopType::Bus, false);
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece
 			}
 			assert(IsTileType(tile, TileType::Road));
 			/* Change owner of tile and all roadtypes */
 			ChangeTileOwner(tile, old_owner, new_owner);
 		} else {
-<<<<<<< HEAD
-			Command<CMD_LANDSCAPE_CLEAR>::Do({ DoCommandFlag::Execute, DoCommandFlag::Bankrupt }, tile);
-=======
 			Command<Commands::LandscapeClear>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece
 			/* Set tile owner of water under (now removed) buoy and dock to OWNER_NONE.
 			 * Update owner of buoy if it was not removed (was in orders).
 			 * Do not update when owned by OWNER_WATER (sea and rivers). */

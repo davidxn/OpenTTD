@@ -5058,7 +5058,6 @@ STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Game was
 STR_ERROR_COULD_NOT_CREATE_TOWN                                 :Map generation aborted...{}{}... no suitable town locations
 STR_ERROR_NO_TOWN_IN_SCENARIO                                   :there is no town in this scenario
 
-<<<<<<< HEAD
 # Just using these as spares
 STR_ERROR_PNGMAP                                                :{YELLOW}Blamed for cargo! MWC is {COMMA}!
 STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :{WHITE}Set my own MWC: {COMMA}
@@ -5067,15 +5066,6 @@ STR_ERROR_PNGMAP_MISC                                           :{YELLOW}Receive
 
 STR_ERROR_BMPMAP                                                :{WHITE}Distributed {CREAM}{COMMA} {WHITE}of {CREAM}{COMMA} {WHITE}units of {WHITE}{STRING}
 STR_ERROR_BMPMAP_IMAGE_TYPE                                     :{YELLOW}!{CREAM}!{WHITE}!{CREAM}!{YELLOW}!
-=======
-STR_ERROR_PNGMAP                                                :Can't load landscape from PNG...
-STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :file not found
-STR_ERROR_PNGMAP_IMAGE_TYPE                                     :could not convert image type. 8 or 24-bit PNG image needed
-STR_ERROR_PNGMAP_MISC                                           :something just went wrong (probably corrupted file)
-
-STR_ERROR_BMPMAP                                                :Can't load landscape from BMP...
-STR_ERROR_BMPMAP_IMAGE_TYPE                                     :could not convert image type
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece
 
 STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :image is too large
 
@@ -6044,12 +6034,9 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Badge Fi
 STR_BADGE_CONFIG_PREVIEW                                        :Preview Image
 STR_BADGE_CONFIG_NAME                                           :Name
 STR_BADGE_FILTER_ANY_LABEL                                      :Any {STRING}
-<<<<<<< HEAD
 STR_BADGE_FILTER_IS_LABEL                                       :{STRING} is {STRING}
 
 STR_WAITING_CARGO_LABEL_OK									    :{WHITE}{RAW_STRING}: {COMMA}
 STR_WAITING_CARGO_LABEL_HIGH								    :{YELLOW}{RAW_STRING}: {COMMA}
 STR_WAITING_CARGO_LABEL_VERY_HIGH							    :{ORANGE}{RAW_STRING}: {COMMA}
 STR_WAITING_CARGO_LABEL_MEGA_HIGH							    :{RED}{RAW_STRING}: {COMMA}
-=======
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece

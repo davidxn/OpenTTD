@@ -1056,23 +1056,13 @@ public:
 
 						case Editability::Rate:
 							if (decrease) {
-<<<<<<< HEAD
-								if (i->produced[line - IL_RATE1].rate <= 0) return;
-								i->produced[line - IL_RATE1].rate = std::max(i->produced[line - IL_RATE1].rate - 1, 0);
-=======
 								if (i->produced[line].rate <= 0) return;
 								i->produced[line].rate = std::max(i->produced[line].rate / 2, 0);
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece
 							} else {
 								if (i->produced[line].rate >= 255) return;
 								/* a zero production industry is unlikely to give anything but zero, so push it a little bit */
-<<<<<<< HEAD
-								int new_prod = i->produced[line - IL_RATE1].rate == 0 ? 1 : i->produced[line - IL_RATE1].rate + 1;
-								i->produced[line - IL_RATE1].rate = ClampTo<uint8_t>(new_prod);
-=======
 								int new_prod = i->produced[line].rate == 0 ? 1 : i->produced[line].rate * 2;
 								i->produced[line].rate = ClampTo<uint8_t>(new_prod);
->>>>>>> f296606c920ba5609ec0ff21740cd5a073cc5ece
 							}
 							break;
 
