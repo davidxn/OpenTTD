@@ -528,6 +528,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 	const IndustrySpec *indspec = GetIndustrySpec(i->type);
 	bool moved_cargo = false;
 
+	int textOffset = 0;
 	for (auto &p : i->produced) {
 		uint cw = ClampTo<uint8_t>(p.waiting);
 		if (cw > indspec->minimal_cargo && IsValidCargoType(p.cargo)) {
@@ -541,7 +542,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 			uint am = MoveGoodsToStation(p.cargo, cw, {i->index, SourceType::Industry}, i->stations_near, i->exclusive_consumer);
 			p.history[THIS_MONTH].transported += am;
 			TileIndex t = i->location.tile;
-			ShowDebugTextAnimation(TileX(t) * TILE_SIZE - 10, TileY(t) * TILE_SIZE - 10 + (p.cargo * 8), GetTileZ(t), STR_ERROR_BMPMAP, CargoSpec::Get(p.cargo)->name, am, cw);
+			ShowDebugTextAnimation(TileX(t) * TILE_SIZE - 10, TileY(t) * TILE_SIZE - 10 + (12 * textOffset++), GetTileZ(t), STR_ERROR_BMPMAP, CargoSpec::Get(p.cargo)->name, am, cw);
 
 			moved_cargo |= (am != 0);
 		}
@@ -1563,7 +1564,7 @@ static CommandCost CheckIfIndustryTileSlopes(TileIndex tile, const IndustryTileL
 	/* It is almost impossible to have a fully flat land in TG, so what we
 	 *  do is that we check if we can make the land flat later on. See
 	 *  CheckIfCanLevelIndustryPlatform(). */
-	if (!refused_slope || (_settings_game.game_creation.land_generator == LG_TERRAGENESIS && _generating_world && !custom_shape && !_ignore_industry_restrictions)) {
+	if (!refused_slope || (_settings_game.game_creation.land_generator == LG_TERRAGENESIS && !custom_shape && !_ignore_industry_restrictions)) {
 		return CommandCost();
 	}
 	return CommandCost(STR_ERROR_SITE_UNSUITABLE);
@@ -1598,10 +1599,15 @@ static bool CheckCanTerraformSurroundingTiles(TileIndex tile, uint height, int i
 	for (TileIndex tile_walk : ta) {
 		uint curh = TileHeight(tile_walk);
 		/* Is the tile clear? */
-		if ((GetTileType(tile_walk) != MP_CLEAR) && (GetTileType(tile_walk) != MP_TREES)) return false;
-
+		if ((GetTileType(tile_walk) != MP_CLEAR) && (GetTileType(tile_walk) != MP_TREES)) {
+			Debug(misc, 0, "Can't terraform tile %d because of tile type %d", tile_walk, GetTileType(tile_walk));
+			return false;
+		}
 		/* Don't allow too big of a change if this is the sub-tile check */
-		if (internal != 0 && Delta(curh, height) > 1) return false;
+		if (internal != 0 && Delta(curh, height) > 1) {
+			Debug(misc, 0, "Can't terraform tile %d because it would cause too big a height change", tile_walk);
+			return false;
+		}
 
 		/* Different height, so the surrounding tiles of this tile
 		 *  has to be correct too (in level, or almost in level)
@@ -2285,6 +2291,7 @@ CommandCost CmdIndustrySetText(DoCommandFlags flags, IndustryID ind_id, const En
  * @param creation_type The circumstances the industry is created under.
  * @return the created industry or nullptr if it failed.
  */
+
 static Industry *CreateNewIndustry(TileIndex tile, IndustryType type, IndustryAvailabilityCallType creation_type)
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
@@ -2293,7 +2300,10 @@ static Industry *CreateNewIndustry(TileIndex tile, IndustryType type, IndustryAv
 	uint32_t seed2 = Random();
 	Industry *i = nullptr;
 	size_t layout_index = RandomRange((uint32_t)indspec->layouts.size());
-	[[maybe_unused]] CommandCost ret = CreateNewIndustryHelper(tile, type, DoCommandFlag::Execute, indspec, layout_index, seed, GB(seed2, 0, 16), OWNER_NONE, creation_type, &i);
+	CommandCost ret = CreateNewIndustryHelper(
+			tile, type, DoCommandFlag::Execute, indspec,
+			layout_index, seed, GB(seed2, 0, 16), OWNER_NONE, creation_type, &i
+	);
 	assert(i != nullptr || ret.Failed());
 	return i;
 }
@@ -2386,6 +2396,7 @@ static uint GetNumberOfIndustries()
  * @param try_hard Try very hard to find a place. (Used to place at least one industry per type.)
  * @return Pointer to created industry, or \c nullptr if creation failed.
  */
+
 static Industry *PlaceIndustry(IndustryType type, IndustryAvailabilityCallType creation_type, bool try_hard)
 {
 	uint tries = try_hard ? 10000u : 2000u;
@@ -2454,8 +2465,10 @@ void IndustryBuildData::EconomyMonthlyLoop()
 	/* To prevent running out of unused industries for the player to connect,
 	 * add a fraction of new industries each month, but only if the manager can keep up. */
 	uint max_behind = 1 + std::min(99u, Map::ScaleBySize(3)); // At most 2 industries for small maps, and 100 at the biggest map (about 6 months industry build attempts).
+	Debug(misc, 0, "wanted_inds: {} with {} industries, behind by {}. Max behind is {}", (this->wanted_inds >> 16), GetCurrentTotalNumberOfIndustries(), GetCurrentTotalNumberOfIndustries() - (this->wanted_inds >> 16), max_behind);
 	if (GetCurrentTotalNumberOfIndustries() + max_behind >= (this->wanted_inds >> 16)) {
 		this->wanted_inds += Map::ScaleBySize(NEWINDS_PER_MONTH);
+		Debug(misc, 0, "wanted_inds is creeping up to {} and {} 65536ths", (this->wanted_inds >> 16), (this->wanted_inds & 0xFFFF));
 	}
 }
 
@@ -2640,9 +2653,10 @@ void IndustryBuildData::SetupTargetCount()
 		num_planned += this->builddata[it].target_count;
 	}
 	uint total_amount = this->wanted_inds >> 16; // Desired total number of industries.
-	changed |= num_planned != total_amount;
+	changed = true; //|= num_planned != total_amount;
 	if (!changed) return; // All industries are still the same, no need to re-randomize.
 
+	Debug(misc, 0, "Planning for {} industries, currently have {}", total_amount, GetCurrentTotalNumberOfIndustries(), this->wanted_inds >> 16);
 	/* Initialize the target counts. */
 	uint force_build = 0;  // Number of industries that should always be available.
 	uint32_t total_prob = 0; // Sum of probabilities.
@@ -2670,6 +2684,18 @@ void IndustryBuildData::SetupTargetCount()
 		assert(this->builddata[it].probability > 0);
 		this->builddata[it].target_count++;
 		total_amount--;
+	}
+
+	for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) {
+		if (this->builddata[it].probability > 0) {
+			Debug(misc, 0, "Industry {}: probability {}, min_number {}, target_count {}, actual {}",
+				GetString(GetIndustrySpec(it)->name),
+				this->builddata[it].probability,
+				this->builddata[it].min_number,
+				this->builddata[it].target_count,
+				Industry::GetIndustryTypeCount(it)
+			);
+		}
 	}
 }
 
@@ -2713,6 +2739,7 @@ void IndustryBuildData::TryBuildNewIndustry()
 			/* Non-forced, select an industry type to build (weighted random). */
 			uint32_t r = 0; // Initialized to silence the compiler.
 			if (count > 1) r = RandomRange(total_prob);
+			Debug(misc, 0, "Trying to build industry, total_prob {}, random {}", total_prob, r);
 			for (it = 0; it < NUM_INDUSTRYTYPES; it++) {
 				if (this->builddata[it].wait_count > 0) continue; // Type may not be built now.
 				int difference = this->builddata[it].target_count - Industry::GetIndustryTypeCount(it);
@@ -2725,6 +2752,7 @@ void IndustryBuildData::TryBuildNewIndustry()
 		}
 
 		/* Try to create the industry. */
+		Debug(misc, 0, "Trying to build industry type {}", GetString(GetIndustrySpec(it)->name));
 		const Industry *ind = PlaceIndustry(it, IACT_RANDOMCREATION, false);
 		if (ind == nullptr) {
 			this->builddata[it].wait_count = this->builddata[it].max_wait + 1; // Compensate for decrementing below.
@@ -2888,7 +2916,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 
 	bool callback_enabled = indspec->callback_mask.Test(monthly ? IndustryCallbackMask::MonthlyProdChange : IndustryCallbackMask::ProductionChange);
 	if (callback_enabled) {
-		Debug(misc, 0, "Callback is enabled");
+		//Debug(misc, 0, "Callback is enabled");
 		std::array<int32_t, 1> regs100;
 		uint16_t res = GetIndustryCallback(monthly ? CBID_INDUSTRY_MONTHLYPROD_CHANGE : CBID_INDUSTRY_PRODUCTION_CHANGE, 0, Random(), i, i->type, i->location.tile, regs100);
 		if (res != CALLBACK_FAILED) { // failed callback means "do nothing"
@@ -2899,10 +2927,10 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 			switch (res) {
 				default: NOT_REACHED();
 				case 0x0: break;                  // Do nothing, but show the custom message if any
-				case 0x1: div = 1; break;         // Halve industry production. If production reaches the quarter of the default, the industry is closed instead.
-				case 0x2: mul = 1; break;         // Double industry production if it hasn't reached eight times of the original yet.
-				case 0x3: closeit = true; break;  // The industry announces imminent closure, and is physically removed from the map next month.
-				case 0x4: standard = true; break; // Do the standard random production change as if this industry was a primary one.
+				case 0x1: div = 1; break;         // Halve industry production
+				case 0x2: mul = 1; break;         // Double industry production
+				case 0x3: closeit = true; break;  // The industry announces imminent closure
+				case 0x4: standard = true; break; // Do the standard random production change
 				case 0x5: case 0x6: case 0x7:     // Divide production by 4, 8, 16
 				case 0x8: div = res - 0x3; break; // Divide production by 32
 				case 0x9: case 0xA: case 0xB:     // Multiply production by 4, 8, 16
@@ -2972,10 +3000,10 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 				if (i->ctlflags.Test(IndustryControlFlag::NoProductionIncrease) && new_prod > old_prod) continue;
 
 				/* Do not stop closing the industry when it has the lowest possible production rate */
-				//if (new_prod == old_prod && old_prod > 1) {
-				//	closeit = false;
-				//	continue;
-				//}
+				if (new_prod == old_prod && old_prod > 1) {
+					closeit = false;
+					continue;
+				}
 
 				percent = (old_prod == 0) ? 100 : (new_prod * 100 / old_prod - 100);
 				p.rate = new_prod;
@@ -3000,7 +3028,9 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	}
 
 	if (!callback_enabled && indspec->life_type.Test(IndustryLifeType::Processing)) {
-		if (TimerGameEconomy::year - i->last_prod_year >= PROCESSING_INDUSTRY_ABANDONMENT_YEARS && Chance16(1, original_economy ? 2 : 180)) {
+		if (TimerGameEconomy::year - i->last_prod_year >= PROCESSING_INDUSTRY_ABANDONMENT_YEARS
+			&& Chance16(1, original_economy ? 2 : 180)
+		) {
 			closeit = true;
 		}
 	}
@@ -3016,7 +3046,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	while (div-- != 0 && !closeit) {
 		if (i->prod_level == PRODLEVEL_MINIMUM) {
 			closeit = true;
-			break;
+			break; 
 		} else {
 			i->prod_level = std::max<int>(i->prod_level / 2, PRODLEVEL_MINIMUM);
 			recalculate_multipliers = true;
@@ -3088,29 +3118,20 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 static const IntervalTimer<TimerGameEconomy> _economy_industries_daily({TimerGameEconomy::DAY, TimerGameEconomy::Priority::INDUSTRY}, [](auto)
 {
 	_economy.industry_daily_change_counter += _economy.industry_daily_increment;
-
-	/* Bits 16-31 of industry_construction_counter contain the number of industries to change/create today,
-	 * the lower 16 bit are a fractional part that might accumulate over several days until it
-	 * is sufficient for an industry. */
 	uint16_t change_loop = _economy.industry_daily_change_counter >> 16;
-	Debug(misc, 0, "Industry daily change counter is {}, bitshifted is {}", _economy.industry_daily_change_counter, change_loop);
-
-	/* Reset the active part of the counter, just keeping the "fractional part" */
 	_economy.industry_daily_change_counter &= 0xFFFF;
 
 	if (change_loop == 0) {
 		return;  // Nothing to do? get out
 	}
-	Debug(misc, 0, "Doing something with industries daily loop!");
 
 	Backup<CompanyID> cur_company(_current_company, OWNER_NONE);
-
-	/* perform the required industry changes for the day */
 
 	uint perc = 3; // Between 3% and 9% chance of creating a new industry.
 	if ((_industry_builder.wanted_inds >> 16) > GetCurrentTotalNumberOfIndustries()) {
 		perc = std::min(9u, perc + (_industry_builder.wanted_inds >> 16) - GetCurrentTotalNumberOfIndustries());
 	}
+
 	for (uint16_t j = 0; j < change_loop; j++) {
 		if (Chance16(perc, 100)) {
 			_industry_builder.TryBuildNewIndustry();

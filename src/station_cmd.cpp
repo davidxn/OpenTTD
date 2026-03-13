@@ -4127,9 +4127,6 @@ static void UpdateStationRating(Station *st)
 					/* Need to have int, otherwise it will just overflow etc. */
 					uint prev_waiting = waiting;
 					waiting = std::max((int)waiting - (int)((GB(r, 8, 2) + 1) * num_dests), 0);
-					if (waiting < prev_waiting) {
-						Debug(misc, 0, "Lost {} cargo from {}", prev_waiting - waiting, st->name);
-					}
 					waiting_changed = true;
 				}
 			}
@@ -4503,8 +4500,10 @@ CommandCost CmdRenameStation(DoCommandFlags flags, StationID station_id, const s
 	Station *st = Station::GetIfValid(station_id);
 	if (st == nullptr) return CMD_ERROR;
 
-	CommandCost ret = CheckOwnership(st->owner);
-	if (ret.Failed()) return ret;
+	if (st->owner != OWNER_NONE) {
+		CommandCost ret = CheckOwnership(st->owner);
+		if (ret.Failed()) return ret;
+	}
 
 	bool reset = text.empty();
 
@@ -4677,7 +4676,7 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 		amount *= first_station->goods[cargo].rating + 1;
 		Tile t = first_station->xy;
 		if (std::find(townCargoIndices.begin(), townCargoIndices.end(), cargo) == townCargoIndices.end()) {
-			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, TileY(t) * TILE_SIZE + (cargo * 8), GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, amount >> 8, -1);
+			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, TileY(t) * TILE_SIZE + 12, GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, amount >> 8, -1);
 		}
 		return UpdateStationWaiting(first_station, cargo, amount, source);
 	}
@@ -4729,7 +4728,7 @@ uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const Stati
 	for (auto &p : used_stations) {
 		if (std::find(townCargoIndices.begin(), townCargoIndices.end(), cargo) == townCargoIndices.end()) {
 			Tile t = p.first->xy;
-			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, (TileY(t) * TILE_SIZE) + (cargo * 8), GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, p.second >> 8, -1);
+			ShowDebugTextAnimation(TileX(t) * TILE_SIZE, (TileY(t) * TILE_SIZE) + 12, GetTileZ(t), STR_ERROR_PNGMAP_MISC, CargoSpec::Get(cargo)->name, p.second >> 8, -1);
 		}
 		moved += UpdateStationWaiting(p.first, cargo, p.second, source);
 	}

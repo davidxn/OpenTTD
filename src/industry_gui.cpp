@@ -923,6 +923,11 @@ public:
 
 			DrawString(ir.Indent(label_indent, rtl), this->GetAcceptedCargoString(a, suffix));
 			ir.top += GetCharacterHeight(FS_NORMAL);
+			if (a.history) {
+				DrawString(ir, GetString(STR_INDUSTRY_VIEW_ACCEPTED_EXTENDED, a.waiting, (*a.history)[THIS_MONTH].accepted));
+			}
+
+			ir.top += GetCharacterHeight(FS_NORMAL);
 		}
 
 		int line_height = this->editable == EA_RATE ? this->cheat_line_height : GetCharacterHeight(FS_NORMAL);
@@ -952,7 +957,7 @@ public:
 						p.rate > 0, p.rate < 255);
 			}
 			ir.top += line_height;
-			DrawString(ir, GetString(STR_INDUSTRY_VIEW_TRANSPORTED_EXTENDED, p.rate, p.waiting, p.history[THIS_MONTH].production, p.history[THIS_MONTH].transported));
+			DrawString(ir, GetString(STR_INDUSTRY_VIEW_TRANSPORTED_EXTENDED, i->prod_level, p.rate, p.history[THIS_MONTH].production, p.history[THIS_MONTH].transported));
 			ir.top += line_height;
 		}
 

@@ -1081,8 +1081,9 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoType cargo_type, uint
 
 		/* Update the cargo monitor. */
 		AddCargoDelivery(cargo_type, company, amount, {source, SourceType::Industry}, st, ind->index);
+		//Debug(misc, 0, "Delivered {} pieces of cargo {} to industry {}, waiting is now {}", amount, cargo_type, ind->index, it->waiting);
+		SetWindowDirty(WC_INDUSTRY_VIEW, ind->index);
 	}
-
 	return accepted;
 }
 
@@ -1163,9 +1164,13 @@ static void TriggerIndustryProduction(Industry *i)
 		for (auto ita = std::begin(i->accepted); ita != std::end(i->accepted); ++ita) {
 			if (ita->waiting == 0 || !IsValidCargoType(ita->cargo)) continue;
 
+			//Debug(misc, 0, "Industry {} has {} pieces of cargo {} waiting", i->index, ita->waiting, ita->cargo);
+
 			for (auto itp = std::begin(i->produced); itp != std::end(i->produced); ++itp) {
 				if (!IsValidCargoType(itp->cargo)) continue;
-				itp->waiting = ClampTo<uint16_t>(itp->waiting + (ita->waiting * indspec->input_cargo_multiplier[ita - std::begin(i->accepted)][itp - std::begin(i->produced)] / 256));
+				uint16_t produced_amount = ita->waiting * indspec->input_cargo_multiplier[ita - std::begin(i->accepted)][itp - std::begin(i->produced)] / 256;
+				itp->waiting = ClampTo<uint16_t>(itp->waiting + produced_amount);
+				//Debug(misc, 0, " -> produces {} pieces of cargo {}, waiting is now {}", produced_amount, itp->cargo, itp->waiting);
 			}
 
 			ita->waiting = 0;
