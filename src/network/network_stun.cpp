@@ -18,9 +18,9 @@
 /** Connect to the STUN server. */
 class NetworkStunConnecter : public TCPConnecter {
 private:
-	ClientNetworkStunSocketHandler *stun_handler;
-	std::string token;
-	uint8_t family;
+	ClientNetworkStunSocketHandler *stun_handler; ///< The STUN handler for callbacks.
+	std::string token; ///< The (server) token for this action.
+	uint8_t family; ///< The IP-family to connect with.
 
 public:
 	/**
@@ -115,7 +115,7 @@ NetworkRecvStatus ClientNetworkStunSocketHandler::CloseConnection(bool error)
 		this->connecter = nullptr;
 	}
 
-	return NETWORK_RECV_STATUS_OKAY;
+	return NetworkRecvStatus::Okay;
 }
 
 /** Stop the attempt to connect. */
@@ -145,7 +145,7 @@ void ClientNetworkStunSocketHandler::SendReceive()
 	 * Protocol-wise, the STUN server will never send any packet back anyway. */
 
 	this->CanSendReceive();
-	if (this->SendPackets() == SPS_ALL_SENT && !this->sent_result) {
+	if (this->SendPackets() == SendPacketsState::AllSent && !this->sent_result) {
 		/* We delay giving the GC the result this long, as to make sure we
 		 * have sent the STUN packet first. This means the GC is more likely
 		 * to have the result ready by the time our StunResult() packet

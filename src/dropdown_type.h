@@ -76,7 +76,7 @@ public:
 	 */
 	virtual void Draw(const Rect &full, [[maybe_unused]] const Rect &r, [[maybe_unused]] bool sel, [[maybe_unused]] int click_result, Colours bg_colour) const
 	{
-		if (this->masked) GfxFillRect(full, GetColourGradient(bg_colour, SHADE_LIGHT), FILLRECT_CHECKER);
+		if (this->masked) GfxFillRect(full, GetColourGradient(bg_colour, Shade::Light), FillRectMode::Checker);
 	}
 
 	/**
@@ -84,10 +84,10 @@ public:
 	 * @param sel Whether the item is selected or not.
 	 * @return The text colour.
 	 */
-	TextColour GetColour(bool sel) const
+	ExtendedTextColour GetColour(bool sel) const
 	{
-		if (this->shaded) return (sel ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
-		return sel ? TC_WHITE : TC_BLACK;
+		if (this->shaded) return ExtendedTextColour{sel ? TextColour::Silver : TextColour::Grey, ExtendedTextColourFlag::NoShade};
+		return sel ? TextColour::White : TextColour::Black;
 	}
 };
 
@@ -102,6 +102,8 @@ enum class DropDownOption : uint8_t {
 	Persist, ///< Set if this dropdown should stay open after an option is selected.
 	Filterable, ///< Set if the dropdown is filterable.
 };
+
+/** Bitset of \c DropDownOption elements. */
 using DropDownOptions = EnumBitSet<DropDownOption, uint8_t>;
 
 void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownOptions options = {}, std::string * const persistent_filter_text = nullptr);

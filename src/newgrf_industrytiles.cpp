@@ -151,7 +151,7 @@ IndustryTileResolverObject::IndustryTileResolverObject(IndustryGfx gfx, TileInde
 
 GrfSpecFeature IndustryTileResolverObject::GetFeature() const
 {
-	return GSF_INDUSTRYTILES;
+	return GrfSpecFeature::IndustryTiles;
 }
 
 uint32_t IndustryTileResolverObject::GetDebugID() const
@@ -177,7 +177,7 @@ static void IndustryDrawTileLayout(const TileInfo *ti, const DrawTileSpriteSpan 
 		}
 	}
 
-	DrawNewGRFTileSeq(ti, &dts, TO_INDUSTRIES, stage, GetColourPalette(rnd_colour));
+	DrawNewGRFTileSeq(ti, &dts, TransparencyOption::Industries, stage, GetColourPalette(rnd_colour));
 }
 
 uint16_t GetIndustryTileCallback(CallbackID callback, uint32_t param1, uint32_t param2, IndustryGfx gfx_id, Industry *industry, TileIndex tile, std::span<int32_t> regs100)
@@ -199,7 +199,7 @@ bool DrawNewIndustryTile(TileInfo *ti, Industry *i, IndustryGfx gfx, const Indus
 			if (callback_res != CALLBACK_FAILED) draw_old_one = ConvertBooleanCallback(inds->grf_prop.grffile, CBID_INDTILE_DRAW_FOUNDATIONS, callback_res);
 		}
 
-		if (draw_old_one) DrawFoundation(ti, FOUNDATION_LEVELED);
+		if (draw_old_one) DrawFoundation(ti, Foundation::Leveled);
 	}
 
 	IndustryTileResolverObject object(gfx, ti->tile, i);
@@ -240,7 +240,7 @@ CommandCost PerformIndustryTileSlopeCheck(TileIndex ind_base_tile, TileIndex ind
 	ind.founder = founder;
 
 	std::array<int32_t, 16> regs100;
-	uint16_t callback_res = GetIndustryTileCallback(CBID_INDTILE_SHAPE_CHECK, 0, creation_type << 8 | static_cast<uint32_t>(layout_index), gfx, &ind, ind_tile, regs100);
+	uint16_t callback_res = GetIndustryTileCallback(CBID_INDTILE_SHAPE_CHECK, 0, to_underlying(creation_type) << 8 | static_cast<uint32_t>(layout_index), gfx, &ind, ind_tile, regs100);
 	if (callback_res == CALLBACK_FAILED) {
 		if (!IsSlopeRefused(GetTileSlope(ind_tile), its->slopes_refused)) return CommandCost();
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
@@ -345,12 +345,12 @@ static void DoTriggerIndustryTileRandomisation(TileIndex tile, IndustryRandomTri
 	/* Rerandomise tile bits */
 	uint8_t new_random_bits = Random();
 	uint8_t random_bits = GetIndustryRandomBits(tile);
-	random_bits &= ~object.reseed[VSG_SCOPE_SELF];
-	random_bits |= new_random_bits & object.reseed[VSG_SCOPE_SELF];
+	random_bits &= ~object.reseed[VarSpriteGroupScope::Self];
+	random_bits |= new_random_bits & object.reseed[VarSpriteGroupScope::Self];
 	SetIndustryRandomBits(tile, random_bits);
 	MarkTileDirtyByTile(tile);
 
-	reseed_industry |= object.reseed[VSG_SCOPE_PARENT];
+	reseed_industry |= object.reseed[VarSpriteGroupScope::Parent];
 }
 
 /**

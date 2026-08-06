@@ -47,9 +47,9 @@ enum RoadVehicleStates : uint8_t {
 
 	/* Bit sets of the above specified bits */
 	RVSB_IN_ROAD_STOP            = 1 << RVS_IN_ROAD_STOP,     ///< The vehicle is in a road stop
-	RVSB_IN_ROAD_STOP_END        = RVSB_IN_ROAD_STOP + TRACKDIR_END,
+	RVSB_IN_ROAD_STOP_END        = RVSB_IN_ROAD_STOP + to_underlying(Trackdir::End),
 	RVSB_IN_DT_ROAD_STOP         = 1 << RVS_IN_DT_ROAD_STOP,  ///< The vehicle is in a drive-through road stop
-	RVSB_IN_DT_ROAD_STOP_END     = RVSB_IN_DT_ROAD_STOP + TRACKDIR_END,
+	RVSB_IN_DT_ROAD_STOP_END     = RVSB_IN_DT_ROAD_STOP + to_underlying(Trackdir::End),
 
 	RVSB_DRIVE_SIDE              = 1 << RVS_DRIVE_SIDE,       ///< The vehicle is at the opposite side of the road
 
@@ -90,7 +90,7 @@ void GetRoadVehSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs
 
 /** Element of the RoadVehPathCache. */
 struct RoadVehPathElement {
-	Trackdir trackdir = INVALID_TRACKDIR; ///< Trackdir for this element.
+	Trackdir trackdir = Trackdir::Invalid; ///< Trackdir for this element.
 	TileIndex tile = INVALID_TILE; ///< Tile for this element.
 
 	constexpr RoadVehPathElement() {}
@@ -102,7 +102,7 @@ using RoadVehPathCache = std::vector<RoadVehPathElement>;
 /**
  * Buses, trucks and trams belong to this class.
  */
-struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
+struct RoadVehicle final : public GroundVehicle<RoadVehicle, VehicleType::Road> {
 	RoadVehPathCache path{};  ///< Cached path.
 	uint8_t state = 0; ///< @see RoadVehicleStates
 	uint8_t frame = 0;
@@ -120,11 +120,11 @@ struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	/** We want to 'destruct' the right class. */
 	~RoadVehicle() override { this->PreDestructor(); }
 
-	friend struct GroundVehicle<RoadVehicle, VEH_ROAD>; // GroundVehicle needs to use the acceleration functions defined at RoadVehicle.
+	friend struct GroundVehicle<RoadVehicle, VehicleType::Road>; // GroundVehicle needs to use the acceleration functions defined at RoadVehicle.
 
 	void MarkDirty() override;
 	void UpdateDeltaXY() override;
-	ExpensesType GetExpenseType(bool income) const override { return income ? EXPENSES_ROADVEH_REVENUE : EXPENSES_ROADVEH_RUN; }
+	ExpensesType GetExpenseType(bool income) const override { return income ? ExpensesType::RoadVehRevenue : ExpensesType::RoadVehRun; }
 	bool IsPrimaryVehicle() const override { return this->IsFrontEngine(); }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const override;
 	int GetDisplaySpeed() const override { return this->gcache.last_speed / 2; }
@@ -287,10 +287,10 @@ protected: // These functions should not be called outside acceleration code.
 	 */
 	inline bool TileMayHaveSlopedTrack() const
 	{
-		TrackStatus ts = GetTileTrackStatus(this->tile, TRANSPORT_ROAD, GetRoadTramType(this->roadtype));
-		TrackBits trackbits = TrackStatusToTrackBits(ts);
+		TrackStatus ts = GetTileTrackStatus(this->tile, TransportType::Road, GetRoadTramType(this->roadtype));
+		TrackBits trackbits = TrackdirBitsToTrackBits(ts.trackdirs);
 
-		return trackbits == TRACK_BIT_X || trackbits == TRACK_BIT_Y;
+		return trackbits == Track::X || trackbits == Track::Y;
 	}
 
 	/**
@@ -305,9 +305,9 @@ protected: // These functions should not be called outside acceleration code.
 		const RoadVehicle *rv = this->First();
 
 		/* Check if this vehicle is in the same direction as the road under.
-		 * We already know it has either GVF_GOINGUP_BIT or GVF_GOINGDOWN_BIT set. */
+		 * We already know it has either GroundVehicleFlag::GoingUp or GroundVehicleFlag::GoingDown set. */
 
-		if (rv->state <= RVSB_TRACKDIR_MASK && IsReversingRoadTrackdir((Trackdir)rv->state)) {
+		if (rv->state <= RVSB_TRACKDIR_MASK && IsReversingRoadTrackdir(static_cast<Trackdir>(rv->state))) {
 			/* If the first vehicle is reversing, this vehicle may be reversing too
 			 * (especially if this is the first, and maybe the only, vehicle).*/
 			return true;

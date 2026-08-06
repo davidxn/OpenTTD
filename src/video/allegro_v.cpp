@@ -57,7 +57,7 @@ void VideoDriver_Allegro::MakeDirty(int left, int top, int width, int height)
 
 void VideoDriver_Allegro::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	size_t n = _num_dirty_rects;
 	if (n == 0) return;
@@ -468,11 +468,10 @@ void VideoDriver_Allegro::InputLoop()
 	this->fast_forward_key_pressed = key[KEY_TAB] && (key_shifts & KB_ALT_FLAG) == 0;
 
 	/* Determine which directional keys are down. */
-	_dirkeys =
-		(key[KEY_LEFT]  ? 1 : 0) |
-		(key[KEY_UP]    ? 2 : 0) |
-		(key[KEY_RIGHT] ? 4 : 0) |
-		(key[KEY_DOWN]  ? 8 : 0);
+	_dirkeys.Set(DirectionKey::Left, key[KEY_LEFT]);
+	_dirkeys.Set(DirectionKey::Up, key[KEY_UP]);
+	_dirkeys.Set(DirectionKey::Right, key[KEY_RIGHT]);
+	_dirkeys.Set(DirectionKey::Down, key[KEY_DOWN]);
 
 	if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
 }

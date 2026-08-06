@@ -38,7 +38,7 @@
 #define NETWORK_SEND_DOUBLE_SEED
 #endif /* RANDOM_DEBUG */
 
-typedef class ServerNetworkGameSocketHandler NetworkClientSocket;
+using NetworkClientSocket = class ServerNetworkGameSocketHandler; ///< @copydoc ServerNetworkGameSocketHandler
 
 /** Status of the clients during joining. */
 enum class NetworkJoinStatus : uint8_t {
@@ -109,7 +109,7 @@ void NetworkSyncCommandQueue(NetworkClientSocket *cs);
 void NetworkReplaceCommandClientId(CommandPacket &cp, ClientID client_id);
 
 void ShowNetworkError(StringID error_string);
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, std::string_view name, std::string_view str = {}, StringParameter &&data = {});
+void NetworkTextMessage(NetworkAction action, ExtendedTextColour colour, bool self_send, std::string_view name, std::string_view str = {}, StringParameter &&data = {});
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
 bool NetworkMakeClientNameUnique(std::string &new_name);

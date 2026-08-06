@@ -15,7 +15,7 @@
 #include "music/music_driver.hpp"
 #include "sound/sound_driver.hpp"
 #include "video/video_driver.hpp"
-#include "saveload/saveload.h"
+#include "saveload/saveload_func.h"
 #include "screenshot.h"
 #include "network/network_survey.h"
 #include "news_func.h"
@@ -192,7 +192,7 @@ bool CrashLog::WriteCrashLog()
 {
 	this->crashlog_filename = this->CreateFileName(".json.log");
 
-	auto file = FioFOpenFile(this->crashlog_filename, "w", NO_DIRECTORY);
+	auto file = FioFOpenFile(this->crashlog_filename, "w", Subdirectory::None);
 	if (!file.has_value()) return false;
 
 	std::string survey_json = this->survey.dump(4);
@@ -232,7 +232,7 @@ bool CrashLog::WriteSavegame()
 		this->savegame_filename = this->CreateFileName(".sav");
 
 		/* Don't do a threaded saveload. */
-		return SaveOrLoad(this->savegame_filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;
+		return SaveOrLoad(this->savegame_filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, false) == SaveLoadResult::Ok;
 	} catch (...) {
 		return false;
 	}
@@ -259,7 +259,7 @@ bool CrashLog::WriteScreenshot()
  */
 void CrashLog::SendSurvey() const
 {
-	if (_game_mode == GM_NORMAL) {
+	if (_game_mode == GameMode::Normal) {
 		_survey.Transmit(NetworkSurveyHandler::Reason::Crash, true);
 	}
 }

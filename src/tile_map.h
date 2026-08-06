@@ -181,7 +181,7 @@ inline Owner GetTileOwner(Tile tile)
 	assert(!IsTileType(tile, TileType::House));
 	assert(!IsTileType(tile, TileType::Industry));
 
-	return (Owner)GB(tile.m1(), 0, 5);
+	return static_cast<Owner>(GB(tile.m1(), 0, 5));
 }
 
 /**
@@ -225,8 +225,8 @@ inline bool IsTileOwner(Tile tile, Owner owner)
 inline void SetTropicZone(Tile tile, TropicZone type)
 {
 	assert(tile < Map::Size());
-	assert(!IsTileType(tile, TileType::Void) || type == TROPICZONE_NORMAL);
-	SB(tile.type(), 0, 2, type);
+	assert(!IsTileType(tile, TileType::Void) || type == TropicZone::Normal);
+	SB(tile.type(), 0, 2, to_underlying(type));
 }
 
 /**
@@ -238,7 +238,7 @@ inline void SetTropicZone(Tile tile, TropicZone type)
 inline TropicZone GetTropicZone(Tile tile)
 {
 	assert(tile < Map::Size());
-	return (TropicZone)GB(tile.type(), 0, 2);
+	return static_cast<TropicZone>(GB(tile.type(), 0, 2));
 }
 
 /**
@@ -278,7 +278,7 @@ bool IsTileFlat(TileIndex tile, int *h = nullptr);
  */
 inline Slope GetTileSlope(TileIndex tile)
 {
-	return std::get<0>(GetTileSlopeZ(tile));
+	return std::get<Slope>(GetTileSlopeZ(tile));
 }
 
 /**

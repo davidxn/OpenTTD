@@ -46,6 +46,10 @@ extern SpriteGroupPool _spritegroup_pool;
 /** Common wrapper for all the different sprite group types. */
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
 protected:
+	/**
+	 * Create the SpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
 	SpriteGroup(SpriteGroupID index) : SpriteGroupPool::PoolItem<&_spritegroup_pool>(index) {}
 	/**
 	 * Resolves a callback or rerandomisation callback to a NewGRF.
@@ -69,6 +73,10 @@ public:
  */
 template <class T>
 struct SpecializedSpriteGroup : public SpriteGroup {
+	/**
+	 * Create the SpecializedSpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
 	inline SpecializedSpriteGroup(SpriteGroupID index) : SpriteGroup(index) {}
 
 	/**
@@ -86,6 +94,10 @@ struct SpecializedSpriteGroup : public SpriteGroup {
 
 /** 'Real' sprite groups contain a list of other result or callback sprite groups. */
 struct RealSpriteGroup : SpecializedSpriteGroup<RealSpriteGroup> {
+	/**
+	 * Create the RealSpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
 	RealSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<RealSpriteGroup>(index) {}
 
 	/* Loaded = in motion, loading = not moving
@@ -103,53 +115,53 @@ protected:
 };
 
 /** Shared by deterministic and random groups. */
-enum VarSpriteGroupScope : uint8_t {
-	VSG_BEGIN,
+enum class VarSpriteGroupScope : uint8_t {
+	Self, ///< Resolved object itself.
+	Parent, ///< Related object of the resolved one.
+	Relative, ///< Relative position (vehicles only).
 
-	VSG_SCOPE_SELF = VSG_BEGIN, ///< Resolved object itself
-	VSG_SCOPE_PARENT,           ///< Related object of the resolved one
-	VSG_SCOPE_RELATIVE,         ///< Relative position (vehicles only)
-
-	VSG_END
-};
-DECLARE_INCREMENT_DECREMENT_OPERATORS(VarSpriteGroupScope)
-
-enum DeterministicSpriteGroupSize : uint8_t {
-	DSG_SIZE_BYTE,
-	DSG_SIZE_WORD,
-	DSG_SIZE_DWORD,
+	End, ///< End marker.
 };
 
-enum DeterministicSpriteGroupAdjustType : uint8_t {
-	DSGA_TYPE_NONE,
-	DSGA_TYPE_DIV,
-	DSGA_TYPE_MOD,
+/** Deterministic sprite group variable size. */
+enum class DeterministicSpriteGroupSize : uint8_t {
+	Byte, ///< Treat variable as a Byte.
+	Word, ///< Treat variable as a Word.
+	DWord, ///< Treat variable as a DWord.
 };
 
-enum DeterministicSpriteGroupAdjustOperation : uint8_t {
-	DSGA_OP_ADD,  ///< a + b
-	DSGA_OP_SUB,  ///< a - b
-	DSGA_OP_SMIN, ///< (signed) min(a, b)
-	DSGA_OP_SMAX, ///< (signed) max(a, b)
-	DSGA_OP_UMIN, ///< (unsigned) min(a, b)
-	DSGA_OP_UMAX, ///< (unsigned) max(a, b)
-	DSGA_OP_SDIV, ///< (signed) a / b
-	DSGA_OP_SMOD, ///< (signed) a % b
-	DSGA_OP_UDIV, ///< (unsigned) a / b
-	DSGA_OP_UMOD, ///< (unsigned) a & b
-	DSGA_OP_MUL,  ///< a * b
-	DSGA_OP_AND,  ///< a & b
-	DSGA_OP_OR,   ///< a | b
-	DSGA_OP_XOR,  ///< a ^ b
-	DSGA_OP_STO,  ///< store a into temporary storage, indexed by b. return a
-	DSGA_OP_RST,  ///< return b
-	DSGA_OP_STOP, ///< store a into persistent storage, indexed by b, return a
-	DSGA_OP_ROR,  ///< rotate a b positions to the right
-	DSGA_OP_SCMP, ///< (signed) comparison (a < b -> 0, a == b = 1, a > b = 2)
-	DSGA_OP_UCMP, ///< (unsigned) comparison (a < b -> 0, a == b = 1, a > b = 2)
-	DSGA_OP_SHL,  ///< a << b
-	DSGA_OP_SHR,  ///< (unsigned) a >> b
-	DSGA_OP_SAR,  ///< (signed) a >> b
+/** Deterministic sprite group adjust type. */
+enum class DeterministicSpriteGroupAdjustType : uint8_t {
+	None, ///< No adjustment.
+	Div, ///< Apply divide adjustment to value.
+	Mod, ///< Apply modulus adjustment to value.
+};
+
+/** Deterministic sprite group adjust operation. */
+enum class DeterministicSpriteGroupAdjustOperation : uint8_t {
+	Add, ///< a + b
+	Sub, ///< a - b
+	SMin, ///< (signed) min(a, b)
+	SMax, ///< (signed) max(a, b)
+	UMin, ///< (unsigned) min(a, b)
+	UMax, ///< (unsigned) max(a, b)
+	SDiv, ///< (signed) a / b
+	SMod, ///< (signed) a % b
+	UDiv, ///< (unsigned) a / b
+	UMod, ///< (unsigned) a & b
+	Mul, ///< a * b
+	And, ///< a & b
+	Or, ///< a | b
+	Xor, ///< a ^ b
+	Sto, ///< store a into temporary storage, indexed by b. return a
+	Rst, ///< return b
+	Stop, ///< store a into persistent storage, indexed by b, return a
+	Ror, ///< rotate a b positions to the right
+	SCmp, ///< (signed) comparison (a < b -> 0, a == b = 1, a > b = 2)
+	UCmp, ///< (unsigned) comparison (a < b -> 0, a == b = 1, a > b = 2)
+	Shl, ///< a << b
+	Shr, ///< (unsigned) a >> b
+	Sar, ///< (signed) a >> b
 };
 
 
@@ -197,9 +209,10 @@ protected:
 	ResolverResult Resolve(ResolverObject &object) const override;
 };
 
-enum RandomizedSpriteGroupCompareMode : uint8_t {
-	RSG_CMP_ANY,
-	RSG_CMP_ALL,
+/** Randomized sprite group comparisation mode. */
+enum class RandomizedSpriteGroupCompareMode : uint8_t {
+	Any, ///< Match if any bit is triggered.
+	All, ///< Match if all bits are triggered.
 };
 
 struct RandomizedSpriteGroup : SpecializedSpriteGroup<RandomizedSpriteGroup> {
@@ -372,7 +385,7 @@ protected:
 	uint32_t waiting_random_triggers = 0; ///< Waiting triggers to be used by any rerandomisation. (scope independent)
 	uint32_t used_random_triggers = 0; ///< Subset of cur_triggers, which actually triggered some rerandomisation. (scope independent)
 public:
-	std::array<uint32_t, VSG_END> reseed; ///< Collects bits to rerandomise while triggering triggers.
+	EnumIndexArray<uint32_t, VarSpriteGroupScope, VarSpriteGroupScope::End> reseed; ///< Collects bits to rerandomise while triggering triggers.
 
 	const GRFFile *grffile = nullptr; ///< GRFFile the resolved SpriteGroup belongs to
 	const SpriteGroup *root_spritegroup = nullptr; ///< Root SpriteGroup to use for resolving
@@ -423,7 +436,7 @@ public:
 
 	virtual const SpriteGroup *ResolveReal(const RealSpriteGroup &group) const;
 
-	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, uint8_t relative = 0);
+	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VarSpriteGroupScope::Self, uint8_t relative = 0);
 
 	/**
 	 * Used by RandomizedSpriteGroup: Triggers for rerandomisation
@@ -451,7 +464,7 @@ public:
 	uint32_t GetReseedSum() const
 	{
 		uint32_t sum = 0;
-		for (VarSpriteGroupScope vsg = VSG_BEGIN; vsg < VSG_END; vsg++) {
+		for (VarSpriteGroupScope vsg : EnumRange(VarSpriteGroupScope::End)) {
 			sum |= this->reseed[vsg];
 		}
 		return sum;
@@ -462,7 +475,7 @@ public:
 	 * This function is mainly intended for the callback profiling feature.
 	 * @return The feature.
 	 */
-	virtual GrfSpecFeature GetFeature() const { return GSF_INVALID; }
+	virtual GrfSpecFeature GetFeature() const { return GrfSpecFeature::Invalid; }
 	/**
 	 * Get an identifier for the item being resolved.
 	 * This function is mainly intended for the callback profiling feature,
@@ -482,7 +495,7 @@ struct SpecializedResolverObject : public ResolverObject {
 	/**
 	 * Set waiting triggers for rerandomisation.
 	 * This is scope independent, even though this is broken-by-design in most cases.
-	 * @param triggers The triggers to set wating.
+	 * @param triggers The triggers to set waiting.
 	 */
 	void SetWaitingRandomTriggers(RandomTriggers triggers)
 	{

@@ -14,8 +14,8 @@
 #include "company_type.h"
 #include "livery.h"
 
-enum ClientID : uint32_t;
-enum Colours : uint8_t;
+enum class ClientID : uint32_t;
+enum class Colours : uint8_t;
 
 CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyID company_id, CompanyRemoveReason reason, ClientID client_id);
 CommandCost CmdCompanyAllowListCtrl(DoCommandFlags flags, CompanyAllowListCtrlAction action, const std::string &public_key);

@@ -22,7 +22,7 @@ extern StationPool _station_pool;
 template <typename T>
 struct SpecMapping {
 	const T *spec = nullptr; ///< Custom spec.
-	uint32_t grfid = 0; ///< GRF ID of this custom spec.
+	GrfID grfid{}; ///< GRF ID of this custom spec.
 	uint16_t localidx = 0; ///< Local ID within GRF of this custom spec.
 };
 
@@ -340,7 +340,9 @@ struct SpecializedStation : public BaseStation {
  * @return Speclist of custom spec type.
  */
 template <class T> std::vector<SpecMapping<T>> &GetStationSpecList(BaseStation *bst);
+/** @copydoc GetStationSpecList */
 template <> inline std::vector<SpecMapping<StationSpec>> &GetStationSpecList<StationSpec>(BaseStation *bst) { return bst->speclist; }
+/** @copydoc GetStationSpecList */
 template <> inline std::vector<SpecMapping<RoadStopSpec>> &GetStationSpecList<RoadStopSpec>(BaseStation *bst) { return bst->roadstop_speclist; }
 
 #endif /* BASE_STATION_BASE_H */

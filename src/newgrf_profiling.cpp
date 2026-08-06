@@ -112,18 +112,18 @@ uint32_t NewGRFProfiler::Finish()
 	if (!this->active) return 0;
 
 	if (this->calls.empty()) {
-		IConsolePrint(CC_DEBUG, "Finished profile of NewGRF [{:08X}], no events collected, not writing a file.", std::byteswap(this->grffile->grfid));
+		IConsolePrint(CC_DEBUG, "Finished profile of NewGRF [{}], no events collected, not writing a file.", FormatArrayAsHex(this->grffile->grfid));
 
 		this->Abort();
 		return 0;
 	}
 
 	std::string filename = this->GetOutputFilename();
-	IConsolePrint(CC_DEBUG, "Finished profile of NewGRF [{:08X}], writing {} events to '{}'.", std::byteswap(this->grffile->grfid), this->calls.size(), filename);
+	IConsolePrint(CC_DEBUG, "Finished profile of NewGRF [{}], writing {} events to '{}'.", FormatArrayAsHex(this->grffile->grfid), this->calls.size(), filename);
 
 	uint32_t total_microseconds = 0;
 
-	auto f = FioFOpenFile(filename, "wt", Subdirectory::NO_DIRECTORY);
+	auto f = FioFOpenFile(filename, "wt", Subdirectory::None);
 
 	if (!f.has_value()) {
 		IConsolePrint(CC_ERROR, "Failed to open '{}' for writing.", filename);
@@ -151,7 +151,7 @@ void NewGRFProfiler::Abort()
  */
 std::string NewGRFProfiler::GetOutputFilename() const
 {
-	return fmt::format("{}grfprofile-{:%Y%m%d-%H%M}-{:08X}.csv", FiosGetScreenshotDir(), fmt::localtime(time(nullptr)), std::byteswap(this->grffile->grfid));
+	return fmt::format("{}grfprofile-{:%Y%m%d-%H%M}-{}.csv", FiosGetScreenshotDir(), fmt::localtime(time(nullptr)), FormatArrayAsHex(this->grffile->grfid));
 }
 
 /* static */ uint32_t NewGRFProfiler::FinishAll()
@@ -184,7 +184,7 @@ static TimeoutTimer<TimerGameTick> _profiling_finish_timeout({ TimerGameTick::Pr
 
 /**
  * Start the timeout timer that will finish all profiling sessions.
- * @param ticks The timemout in game ticks.
+ * @param ticks The timeout in game ticks.
  */
 /* static */ void NewGRFProfiler::StartTimer(uint64_t ticks)
 {

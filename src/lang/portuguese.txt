@@ -526,6 +526,7 @@ STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION                          :Construção de
 STR_LANDSCAPING_MENU_LANDSCAPING                                :Paisagem
 STR_LANDSCAPING_MENU_PLANT_TREES                                :Plantar árvores
 STR_LANDSCAPING_MENU_PLACE_SIGN                                 :Colocar letreiro
+STR_LANDSCAPING_MENU_PLACE_OBJECT                               :Colocar objeto
 
 # Music menu
 STR_TOOLBAR_SOUND_MUSIC                                         :Som/música
@@ -631,7 +632,6 @@ STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLA
 STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 anos (trimestral)
 STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 anos (anual)
 
-STR_GRAPH_TOGGLE_RANGE                                          :Alternar o gráfico para este intervalo de dados
 STR_GRAPH_SELECT_SCALE                                          :Alterar a escala horizontal do gráfico
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Tarifas por tipo de carga
@@ -642,18 +642,26 @@ STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Nenhum
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Mostrar todas as cargas no gráfico
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Não mostrar cargas no gráfico
-STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Alternar o gráfico para este tipo de carga
+STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Mostrar/Ocultar gráfico para este tipo de carga
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
 STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}Histórico da Carga - {INDUSTRY}
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Produzido
+STR_GRAPH_INDUSTRY_RANGE_PRODUCED_TOOLTIP                       :Mostrar/Ocultar gráfico da carga produzida por esta indústria
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Transportado
+STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED_TOOLTIP                    :Mostrar/Ocultar gráfico da carga transportada a partir desta indústria
 STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Entregue
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED_TOOLTIP                      :Mostrar/Ocultar gráfico da carga entregue a esta indústria
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Em Espera
+STR_GRAPH_INDUSTRY_RANGE_WAITING_TOOLTIP                        :Mostrar/Ocultar gráfico da carga em espera nesta indústria
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}Histórico da Carga - {TOWN}
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Abastecimento
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Produzido
+STR_GRAPH_TOWN_RANGE_PRODUCED_TOOLTIP                           :Mostrar/Ocultar gráfico da carga produzida por esta localidade
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Transportado
+STR_GRAPH_TOWN_RANGE_TRANSPORTED_TOOLTIP                        :Mostrar/Ocultar gráfico da carga transportada a partir desta localidade
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :Entregue
+STR_GRAPH_TOWN_RANGE_DELIVERED_TOOLTIP                          :Mostrar/Ocultar gráfico da carga entregue a esta localidade
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Exibir classificações detalhadas de desempenho
 
@@ -1210,9 +1218,9 @@ STR_RIVERS_MODERATE                                             :Alguns
 STR_RIVERS_LOT                                                  :Muitos
 
 ###length 3
-STR_DISASTER_NONE                                               :Nenhum
-STR_DISASTER_REDUCED                                            :Reduzido
-STR_DISASTER_NORMAL                                             :Normal
+STR_BREAKDOWNS_NONE                                             :Nenhum
+STR_BREAKDOWNS_REDUCED                                          :Reduzido
+STR_BREAKDOWNS_NORMAL                                           :Normal
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -1352,8 +1360,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessões: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Se ativo, podem ocorrer recessões periodicamente. Durante uma recessão a produção em geral é mais baixa (e regressa aos níveis anteriores quando termina a recessão)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Desabilitar inversão de comboios nas estações: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Quando ativo, os comboios não podem inverter marcha em estações não-terminais, mesmo se existir um caminho mais curto para o próximo destino ao inverter
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :Permitir onde os comboios podem inverter o sentido: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Escolha onde os comboios podem virar para inverter o sentido de marcha. Com a opção "Todos os sítios", os comboios podem virar em qualquer sitio. Com a opção "Apenas no fim da linha", os comboios não invertem o sentido se for possível seguir em frente. Com a opção "Nenhum sítio", os comboios não podem inverter o sentido e seguirão em marcha-atrás se necessário, mas a velocidade será reduzida se o veículo traseiro não tiver cabina de condução
+
+###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :Todos os sítios
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :Apenas no fim da linha
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :Nenhum sítio
 
 STR_CONFIG_SETTING_DISASTERS                                    :Desastres: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Ativa desastres que podem ocasionalmente bloquear ou destruir veículos ou infraestruturas
@@ -1558,6 +1571,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Escalar a produ
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Escalar a produção de carga das indústrias nesta percentagem
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
+STR_CONFIG_SETTING_CARGO_AGING_RATE                             :Taxa de depreciação do pagamento de cargas: {STRING}
+STR_CONFIG_SETTING_CARGO_AGING_RATE_HELPTEXT                    :Ajustar a rapidez com que a carga transportada num veículo perde valor ao longo do tempo
+STR_CONFIG_SETTING_CARGO_AGING_RATE_VALUE                       :{NUM}%
+###setting-zero-is-special
+STR_CONFIG_SETTING_CARGO_AGING_RATE_ZERO                        :Sem depreciação
+
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Renovar automaticamente os veículos quando estão a ficar velhos: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Quando ativo, um veículo a chegar ao fim de vida é automaticamente substituído quando as condições de renovação estão reunidas
 
@@ -1648,12 +1667,12 @@ STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Nenhum
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Original
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Melhorada
 
-STR_CONFIG_SETTING_ROAD_SIDE                                    :Veículos rodoviários: {STRING}
-STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Escolher o lado de condução
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Lado do condutor dos veículos rodoviários: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Escolha o lado de condução dos veículos rodoviários.{}Isto também pode afetar o lado dos sinais e os gráficos dos semáforos.{}Pode ser necessário recarregar o jogo para que a alteração tenha efeito total
 
 ###length 2
-STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Circular pela esquerda
-STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Circular pela direita
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Esquerda
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Direita
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Rotação mapa de alt.: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_TOOLTIP                   :Escolher de que forma a imagem topográfica será girada para caber no mundo do jogo
@@ -1793,12 +1812,12 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Mostrar horári
 STR_CONFIG_SETTING_QUICKGOTO                                    :Criação rápida de ordens de veículos: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pré-selecionar o 'cursor Ir Para' ao abrir a janela de ordens
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Tipo padrão de linha ferroviária (ao criar/abrir jogo): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Tipo de carril selecionado após o início ou carregamento de um jogo. 'primeiro disponível' seleciona o tipo mais antigo de carril, 'último disponível' seleciona o tipo mais recente de carril e 'mais utilizado' seleciona o tipo mais utilizado atualmente
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE                       :Tipo padrão de via ferroviária, rodoviária e de elétrico (após iniciar ou carregar um jogo): {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_HELPTEXT              :Tipo de via ferroviária, rodoviária e de elétrico a selecionar após iniciar ou carregar um jogo. A opção “Primeiro disponível” seleciona o tipo de via mais antigo, a opção “Último disponível” seleciona o tipo de via mais recente e a opção “Mais utilizado” seleciona o tipo que está a ser mais usado no momento
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Primeiro disponível
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Último disponível
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Mais utilizado
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_FIRST                 :Primeiro disponível
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_LAST                  :Último disponível
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_MOST_USED             :Mais utilizado
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Mostrar caminho de ferro reservado: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Dar cores diferentes aos carris reservados para ajudar a detectar problemas com combóios que recusam entrar em bloqueios baseados em caminhos
@@ -1904,6 +1923,9 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Quando ativo, o
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Ativar limites de velocidade para vagões: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Quando ativo, aplica também os limites de velocidade dos vagões para decidir a velocidade máxima do comboio
+
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :Ativar alcance máximo para aeronaves: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :Quando ativado, os NewGRFs poderão limitar o alcance máximo das aeronaves
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Desativar carris eletrificados: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Ativar esta preferência desativa o requisito de eletrificar carris para que composições elétricas os possam utilizar
@@ -2228,7 +2250,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :a ignorar conju
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :a ignorar conjunto Base de Sons '{STRING}': não foi encontrado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :a ignorar conjunto Musica Base '{STRING}': não foi encontrado
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Erro com as definições gráficas...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :não foi encontrada nenhuma placa gráfica compatível. Aceleração por hardware desativada
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :O controlador gráfico interrompeu o jogo. Aceleração por hardware desativada
@@ -2873,22 +2895,22 @@ STR_PICKER_COLLECTION_DELETE_QUERY                              :Apagar coleçã
 STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Tem a certeza que quer apagar esta coleção?
 STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Tem a certeza que quer apagar esta coleção? Contém NewGRFs desativados!
 
-STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecionar uma classe de estação para mostrar
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecionar uma classe de estação para visualização. Ctrl+clique para adicionar ou remover os itens guardados
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Escolher um tipo de estação para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
 STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Selecione uma coleção de estações para mostrar
-STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Selecionar uma classe de ponto de controlo para mostrar
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Selecionar uma classe de ponto de controlo para visualização. Ctrl+clique para adicionar ou remover os itens guardados
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Escolher um tipo de ponto de controlo para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
 STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Selecione uma coleção de pontos de controlo para mostrar
-STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Selecionar uma classe de estação rodoviária para mostrar
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Selecionar uma classe de paragem de autocarro para visualização. Ctrl+clique para adicionar ou remover os itens guardados
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Escolher um tipo de estação rodoviária para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
 STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Selecione uma coleção de paragens de autocarro para mostrar
-STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Selecionar uma classe de terminal de carga para camiões para mostrar
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Selecionar uma classe de terminal de carga para camiões para visualização. Ctrl+clique para adicionar ou remover os itens guardados
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Escolher um tipo de terminal de carga para camiões para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
 STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Selecione uma coleção de terminais de carga para camiões para mostrar
-STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Selecionar uma classe de objeto para mostrar
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Selecionar uma classe de objeto para visualização. Ctrl+clique para adicionar ou remover os itens guardados
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Selecione um tipo de objeto para construir. Ctrl+Clique para adicionar ou remover nos itens guardados. Ctrl+Clique+Arrastar para selecionar a área diagonalmente. Pressione também Shift para apenas mostrar o custo estimado
 STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Selecione uma coleção de objetos para mostrar
-STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecione uma zona de localidade para mostrar
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecione uma zona de localidade para visualização. Ctrl+clique para adicionar ou remover os itens guardados
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Escolher um tipo de casa para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Selecione uma coleção de casas para mostrar
 
@@ -3079,10 +3101,12 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Plantar 
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Gerar Terreno
-STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Colocar áreas rochosas no terreno
+STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Colocar áreas rochosas no terreno.{}Ctrl+Clique para remover áreas rochosas
 STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}Definir área de deserto.{}Ctrl+Clique para remover área de deserto
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}Aumentar área de terreno a baixar/levantar
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}Diminuir área de terreno a baixar/levantar
+STR_TERRAFORM_TOOLTIP_LOWER_A_CORNER_OF_LAND                    :{BLACK}Baixe um canto ou uma área do terreno. Se o tamanho for 1x1, clique e arraste para baixar o primeiro canto selecionado e nivelar a área selecionada à nova altura. Pressione Ctrl + clique e arraste para selecionar a área na diagonal. Pressione também a tecla Shift para mostrar apenas a estimativa do custo
+STR_TERRAFORM_TOOLTIP_RAISE_A_CORNER_OF_LAND                    :{BLACK}Eleve um canto ou uma área do terreno. Se o tamanho for 1x1, clique e arraste para elevar o primeiro canto selecionado e nivelar a área selecionada à nova altura. Pressione Ctrl + clique e arraste para selecionar a área na diagonal. Pressione também a tecla Shift para mostrar apenas a estimativa do custo
 STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}Gerar terreno aleatório
 STR_TERRAFORM_SE_NEW_WORLD                                      :{BLACK}Criar novo cenário
 STR_TERRAFORM_RESET_LANDSCAPE                                   :{BLACK}Repor terreno
@@ -3819,6 +3843,7 @@ STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Clique no objetivo para centrar a visualização na indústria/localidade/mosaico. Ctrl+Clique para abrir um novo visualizador na localização da indústria/localidade/mosaico
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Questão
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}Informação
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}Aviso
@@ -4575,8 +4600,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Renomear
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Renomear navio
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Renomear aeronave
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "" s} ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "" s} (tempo de vida útil: {COMMA} ano{P "" s})
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} (tempo de vida útil: {COMMA} ano{P "" s})
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Idade: {LTBLUE}{STRING}{BLACK}   Custo de Circulação: {LTBLUE}{CURRENCY_LONG}/ano
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Idade: {LTBLUE}{STRING}{BLACK}   Custo de Circulação: {LTBLUE}{CURRENCY_LONG}/período
 
@@ -4590,7 +4615,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Lucro ne
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Lucro deste ano: {LTBLUE}{CURRENCY_LONG} (último ano: {CURRENCY_LONG}) {BLACK}Performance min.: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Lucro neste período: {LTBLUE}{CURRENCY_LONG} (útimo período: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Lucro neste período: {LTBLUE}{CURRENCY_LONG} (último período: {CURRENCY_LONG}) {BLACK}Performance mín.: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Fiabilidade: {LTBLUE}{COMMA}%  {BLACK}Avarias desde a última manutenção: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Fiabilidade: {LTBLUE}{COMMA}% (máx.: {COMMA}%) {BLACK}Avarias desde a última manutenção: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Fabricado em: {LTBLUE}{NUM}{BLACK} Valor: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Capacidade: {LTBLUE}Nenhuma{STRING}
@@ -4700,9 +4725,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Encher de qq. c
 STR_ORDER_DROP_NO_LOADING                                       :Sem carga
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Mudar o comportamento de carga da ordem selecionada
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Descarregar todas
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Forçar descarregar tudo
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Descarregar se aceite
-STR_ORDER_DROP_UNLOAD                                           :Descarregar todas
+STR_ORDER_DROP_UNLOAD                                           :Descarregar mesmo se não for aceite
 STR_ORDER_DROP_TRANSFER                                         :Transferir
 STR_ORDER_DROP_NO_UNLOADING                                     :Sem descarga
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Mudar o comportamento de descarga da ordem selecionada
@@ -4730,7 +4755,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Selecion
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Dados de veículo para ida à base
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Percentagem de carga
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Fiabilidade
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Velocidade máxima
@@ -4739,6 +4764,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Requer manuten�
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Sempre
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Tempo de vida restante (anos)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Fiabilidade máxima
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Fazer marcha-atrás em velocidade reduzida
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Como comparar os dados do veículo com o parâmetro que foi passado
@@ -4804,15 +4830,15 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(Implíc
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Carga completa)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Encher com qualquer carga)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Sem carregar)
-STR_ORDER_UNLOAD                                                :{SPACE}(Descarregar e levar carga)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Descarregar e aguardar até encher)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Descarregar e aguardar até encher com qualquer carga)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Descarregar e partir vazio)
+STR_ORDER_UNLOAD                                                :{SPACE}(Forçar descarregar e levar carga)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Forçar descarregar e aguardar até encher)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Forçar descarregar e aguardar até encher com qualquer carga)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Forçar descarregar e partir vazio)
 STR_ORDER_TRANSFER                                              :{SPACE}(Transferir e levar carga)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Transferir e aguardar até encher)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Transferir e aguardar até encher com qualquer carga)
 STR_ORDER_TRANSFER_NO_LOAD                                      :{SPACE}(Transferir e partir vazio)
-STR_ORDER_NO_UNLOAD                                             :{SPACE}(Não descarregar e tomar carga)
+STR_ORDER_NO_UNLOAD                                             :{SPACE}(Não descarregar e levar carga)
 STR_ORDER_NO_UNLOAD_FULL_LOAD                                   :{SPACE}(Não descarregar e aguardar até encher)
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY                               :{SPACE}(Não descarregar e aguardar até encher com qualquer carga)
 STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Sem carregar e descarregar)
@@ -4820,13 +4846,13 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Sem car
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Adaptar para transportar {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Carga completa com adaptação para {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Encher com qualquer carga com adaptação para {STRING})
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Descarregar e tomar carga com adaptação para {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Descarregar e aguardar até encher com adaptação para {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Descarregar e aguardar até encher com qualquer carga com adaptação para {STRING})
-STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Transferir e tomar carga com adaptação para {STRING})
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Forçar descarregar e levar carga com adaptação para {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Forçar descarregar e aguardar até encher com adaptação para {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Forçar descarregar e aguardar até encher com qualquer carga com adaptação para {STRING})
+STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Transferir e levar carga com adaptação para {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Transferir e aguardar até encher com adaptação para {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Transferir e aguardar até encher com qualquer carga com adaptação para {STRING})
-STR_ORDER_NO_UNLOAD_REFIT                                       :{SPACE}(Não descarregar e tomar carga com adaptação para {STRING})
+STR_ORDER_NO_UNLOAD_REFIT                                       :{SPACE}(Não descarregar e levar carga com adaptação para {STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :{SPACE}(Não descarregar e aguardar até encher com adaptação para {STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :{SPACE}(Não descarregar e aguardar até encher com qualquer carga com adaptação para {STRING})
 
@@ -5256,8 +5282,9 @@ STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :linhas ferrovi�
 
 STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Não é possível mover veículo...
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :a locomotiva traseira seguirá sempre a sua peça frontal
-STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :Não é possível encontrar rota para o depósito local
-STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :Não é possível encontrar o depósito local
+STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :não é possível encontrar rota para o depósito local
+STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :não é possível encontrar o depósito local
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :não é possível encontrar o hangar local
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :tipo de depósito errado
 
@@ -5342,6 +5369,10 @@ STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :A ponte está {
 STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :A ponte está {HEIGHT} abaixo do necessário para o ponto de controlo ferroviário
 STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :A ponte está {HEIGHT} abaixo do necessário para o ponto de controlo rodoviário
 STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :A ponte está {HEIGHT} abaixo do necessário para a eclusa
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TRAIN_DEPOT                        :ponte é {HEIGHT} mais baixa do que o depósito ferroviário
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADVEH_DEPOT                      :ponte é {HEIGHT} mais baixa do que a garagem
+STR_ERROR_BRIDGE_TOO_LOW_FOR_SHIP_DEPOT                         :ponte é {HEIGHT} mais baixa do que o estaleiro naval
+STR_ERROR_BRIDGE_TOO_LOW_FOR_OBJECT                             :ponte é {HEIGHT} mais baixa do que o objeto
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :Não é possível construir túnel aqui...

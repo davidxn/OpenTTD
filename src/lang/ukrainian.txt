@@ -767,7 +767,6 @@ STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLA
 STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 років (щоквартально)
 STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 роки (щорічно)
 
-STR_GRAPH_TOGGLE_RANGE                                          :Перемкнути графік для цього проміжку даних
 STR_GRAPH_SELECT_SCALE                                          :Змінити горизонтальну шкалу графа
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Тарифи доставки вантажів
@@ -1346,9 +1345,9 @@ STR_RIVERS_MODERATE                                             :середнь�
 STR_RIVERS_LOT                                                  :багато
 
 ###length 3
-STR_DISASTER_NONE                                               :відкл.
-STR_DISASTER_REDUCED                                            :знижено
-STR_DISASTER_NORMAL                                             :нормально
+STR_BREAKDOWNS_NONE                                             :відкл.
+STR_BREAKDOWNS_REDUCED                                          :знижено
+STR_BREAKDOWNS_NORMAL                                           :нормально
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -1488,8 +1487,8 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :висока
 STR_CONFIG_SETTING_RECESSIONS                                   :Рецесії: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Якщо увімкнено, рецесії можуть відбуватися кожні кілька років. Під час рецессії обсяг виробництва на всіх підприємствах значно знижений (він повертається на попередній рівень, коли рецесія закінчується)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Заборонити поїздам розвертатися на станціях: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Якщо увімкнено, поїзди не будуть розвертатися на некінцевих станціях, навіть якщо є коротший шлях до їх наступного пункту призначення, який вимагає розвороту
+
+###length 3
 
 STR_CONFIG_SETTING_DISASTERS                                    :Стихійні лиха: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Перемкнути стихійні лиха, які можуть випадково зруйнувати транспорт або інфраструктуру
@@ -1693,6 +1692,8 @@ STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :Змінити 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Змінити виробництво вантажів підприємствами: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Змінити виробництво вантажів підприємствами на цей відсоток
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
+
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Автозаміна зношених транспортних засобів: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :При включенні транспортні засоби з вичерпаним строком служби автоматично замінюються на нові (при виконанні умов автозаміни).
@@ -1923,12 +1924,7 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Відобра�
 STR_CONFIG_SETTING_QUICKGOTO                                    :Прискорене створення завдань для транспорту: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :При відображенні списка завдань транспортного засобу автоматично натискається кнопка створення нових завдань
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Тип колії на початку нової/завантаженної гри: {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Тип коліі, що вибирається на початку нової або завантаженної гри:{} - перший доступний: перший тип в списку (найстаріший);{}- останній доступний: останній тип в списку (найновіший);{}- найбільш вживаний: тип колії, що найбільше використовувався у грі.
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :перший доступний
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :останній доступний
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :найбільш вживаний
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Показувати зарезервований шлях для колій: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Вмикає відображення зарезервованної потягом ділянки колії, що може допомогти при наявності проблем з маршрутними сигналами.
@@ -2034,6 +2030,7 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Якщо уві
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Враховувати обмеження швидкості вагонів: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :При включенні максимальна швидкість потяга враховує обмеження швидкості вагонів.
+
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Скасувати електрифіковану залізницю: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :При включенні відпадає необхідність побудови електрифікованої колії для потягів на електричній тязі - вони будуть працювати на звичайній залізниці.
@@ -2358,7 +2355,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ба
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... базовий набір звуків '{STRING}' не знайдено
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... базовий набір музики '{STRING}' не знайдено
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Помилка з налаштуванням зображення...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... не знайдено сумісного графічного процесора. Відключено прискорення апаратного забезпечення
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... драйвер графічного процесора спричинив виліт гри. Відключено прискорення апаратного забезпечення
@@ -3944,6 +3941,7 @@ STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Клац мишею на цілі відобразить по центру головного вікна виробництво/місто/клітинку. Ctrl+клац мишею відкриє нове вікно з видом на підприємство/місто/клітинку
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Питання
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}Інформація
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}Попередження
@@ -4706,7 +4704,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Дохі
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Дохід цього року: {LTBLUE}{CURRENCY_LONG} (минулого року: {CURRENCY_LONG}) {BLACK}Найгірше: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Прибуток цього періоду: {LTBLUE}{CURRENCY_LONG} (минулого періоду: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Прибуток цього періоду: {LTBLUE}{CURRENCY_LONG} (минулого періоду: {CURRENCY_LONG}) {BLACK}Питома потужність: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Надійність: {LTBLUE}{COMMA}%  {BLACK}Аварії після останнього техогляду: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Побудований: {LTBLUE}{NUM}{BLACK} Вартість: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Місткість: {LTBLUE}нема{STRING}
@@ -4846,7 +4843,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Вибе
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Дані транспорту для базування завдання
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Процент завантаження
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Надійність
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Макс. швидкість

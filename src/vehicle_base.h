@@ -15,6 +15,7 @@
 #include "command_type.h"
 #include "order_base.h"
 #include "cargopacket.h"
+#include "newgrf_type.h"
 #include "texteff.hpp"
 #include "engine_type.h"
 #include "order_func.h"
@@ -22,7 +23,7 @@
 #include "group_type.h"
 #include "base_consist.h"
 #include "network/network.h"
-#include "saveload/saveload.h"
+#include "saveload/saveload_type.h"
 #include "timer/timer_game_calendar.h"
 
 const uint TILE_AXIAL_DISTANCE = 192; ///< Logical length of the tile in any DiagDirection used in vehicle movement.
@@ -39,6 +40,8 @@ enum class VehState : uint8_t {
 	AircraftBroken = 6, ///< Aircraft is broken down.
 	Crashed        = 7, ///< Vehicle is crashed.
 };
+
+/** Bitset of \c VehState elements. */
 using VehStates = EnumBitSet<VehState, uint8_t>;
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
@@ -62,16 +65,6 @@ struct NewGRFCache {
 	uint8_t  cache_valid = 0; ///< Bitset that indicates which cache values are valid.
 
 	auto operator<=>(const NewGRFCache &) const = default;
-};
-
-/** Models for spawning visual effects. */
-enum VisualEffectSpawnModel : uint8_t {
-	VESM_NONE              = 0, ///< No visual effect
-	VESM_STEAM,                 ///< Steam model
-	VESM_DIESEL,                ///< Diesel model
-	VESM_ELECTRIC,              ///< Electric model
-
-	VESM_END
 };
 
 /**
@@ -158,7 +151,7 @@ struct VehicleSpriteSeq {
  * or calculating the viewport.
  */
 struct MutableSpriteCache {
-	Direction last_direction = INVALID_DIR; ///< Last direction we obtained sprites for
+	Direction last_direction = Direction::Invalid; ///< Last direction we obtained sprites for
 	bool revalidate_before_draw = false; ///< We need to do a GetImage() and check bounds before drawing this sprite
 	bool is_viewport_candidate = false; ///< This vehicle can potentially be drawn on a viewport
 	Rect old_coord{}; ///< Co-ordinates from the last valid bounding box
@@ -209,6 +202,7 @@ private:
 	Vehicle *next = nullptr; ///< pointer to the next vehicle in the chain
 	Vehicle *previous = nullptr; ///< NOSAVE: pointer to the previous vehicle in the chain
 	Vehicle *first = nullptr; ///< NOSAVE: pointer to the first vehicle in the chain
+	Vehicle *last = nullptr; ///< NOSAVE: pointer for the last vehicle in the chain
 
 	Vehicle *next_shared = nullptr; ///< pointer to the next vehicle that shares the order
 	Vehicle *previous_shared = nullptr; ///< NOSAVE: pointer to the previous vehicle in the shared order chain
@@ -265,7 +259,7 @@ public:
 	int32_t x_pos = 0; ///< x coordinate.
 	int32_t y_pos = 0; ///< y coordinate.
 	int32_t z_pos = 0; ///< z coordinate.
-	Direction direction = INVALID_DIR; ///< facing
+	Direction direction = Direction::Invalid; ///< facing
 
 	Owner owner = INVALID_OWNER; ///< Which company owns the vehicle?
 	/**
@@ -331,7 +325,7 @@ public:
 		return 0;
 	}
 
-	Vehicle(VehicleID index, VehicleType type = VEH_INVALID);
+	Vehicle(VehicleID index, VehicleType type = VehicleType::Invalid);
 
 	void PreDestructor();
 	/** We want to 'destruct' the right class. */
@@ -344,8 +338,8 @@ public:
 	GroundVehicleCache *GetGroundVehicleCache();
 	const GroundVehicleCache *GetGroundVehicleCache() const;
 
-	uint16_t &GetGroundVehicleFlags();
-	const uint16_t &GetGroundVehicleFlags() const;
+	GroundVehicleFlags &GetGroundVehicleFlags();
+	const GroundVehicleFlags &GetGroundVehicleFlags() const;
 
 	void DeleteUnreachedImplicitOrders();
 
@@ -368,6 +362,54 @@ public:
 	virtual void UpdateDeltaXY() {}
 
 	/**
+	 * Is this vehicle moving backwards?
+	 * @return \c true iff the vehicle is moving backwards.
+	 */
+	bool IsDrivingBackwards() const { return this->First()->vehicle_flags.Test(VehicleFlag::DrivingBackwards); }
+
+	/**
+	 * Is this vehicle the moving front of the vehicle chain?
+	 * @return \c true iff this vehicle is the moving front of the vehicle chain.
+	 */
+	bool IsMovingFront() const { return this->First()->IsPrimaryVehicle() && (this->IsDrivingBackwards() ? this->Next() : this->Previous()) == nullptr; }
+
+	/**
+	 * Get the moving front of the vehicle chain.
+	 * @return The vehicle which is at the front of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingFront() const { return this->IsDrivingBackwards() ? this->Last() : this->First(); }
+
+	/**
+	 * Get the moving back of the vehicle chain.
+	 * @return The vehicle which is at the back of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingBack() const { return this->IsDrivingBackwards() ? this->First() : this->Last(); }
+
+	/**
+	 * Get the next vehicle in the vehicle chain, relative to its current movement.
+	 * @return The next vehicle of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingNext() const { return this->IsDrivingBackwards() ? this->Previous() : this->Next(); }
+
+	/**
+	 * Get the previous vehicle in the vehicle chain, relative to its current movement.
+	 * @return The previous vehicle of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingPrev() const { return this->IsDrivingBackwards() ? this->Next() : this->Previous(); }
+
+	/**
+	 * Get the moving direction of this vehicle chain.
+	 * @return The direction that the vehicle chain is currently moving.
+	 */
+	Direction GetMovingDirection() const { return this->IsDrivingBackwards() ? ReverseDir(this->direction) : this->direction; }
+
+	/**
+	 * Set the movement direction of this vehicle chain.
+	 * @param d The direction to move.
+	 */
+	void SetMovingDirection(Direction d) { this->direction = this->IsDrivingBackwards() ? ReverseDir(d) : d; }
+
+	/**
 	 * Determines the effective direction-specific vehicle movement speed.
 	 *
 	 * This method belongs to the old vehicle movement method:
@@ -382,7 +424,7 @@ public:
 	 */
 	inline uint GetOldAdvanceSpeed(uint speed)
 	{
-		return (this->direction & 1) ? speed : speed * 3 / 4;
+		return IsDiagonalDirection(this->GetMovingDirection()) ? speed : speed * 3 / 4;
 	}
 
 	/**
@@ -411,7 +453,7 @@ public:
 	 */
 	inline uint GetAdvanceDistance()
 	{
-		return (this->direction & 1) ? TILE_AXIAL_DISTANCE : TILE_CORNER_DISTANCE * 2;
+		return IsDiagonalDirection(this->GetMovingDirection()) ? TILE_AXIAL_DISTANCE : TILE_CORNER_DISTANCE * 2;
 	}
 
 	/**
@@ -419,7 +461,7 @@ public:
 	 * @param income whether this is income or (running) expenses of the vehicle
 	 * @return The expense type.
 	 */
-	virtual ExpensesType GetExpenseType([[maybe_unused]] bool income) const { return EXPENSES_OTHER; }
+	virtual ExpensesType GetExpenseType([[maybe_unused]] bool income) const { return ExpensesType::Other; }
 
 	/**
 	 * Play the sound associated with leaving the station
@@ -444,7 +486,7 @@ public:
 	virtual void GetImage([[maybe_unused]] Direction direction, [[maybe_unused]] EngineImageType image_type, [[maybe_unused]] VehicleSpriteSeq *result) const { result->Clear(); }
 
 	const GRFFile *GetGRF() const;
-	uint32_t GetGRFID() const;
+	GrfID GetGRFID() const;
 
 	/**
 	 * Invalidates cached NewGRF variables
@@ -472,7 +514,7 @@ public:
 	 */
 	[[debug_inline]] inline bool IsGroundVehicle() const
 	{
-		return this->type == VEH_TRAIN || this->type == VEH_ROAD;
+		return this->type == VehicleType::Train || this->type == VehicleType::Road;
 	}
 
 	/**
@@ -560,7 +602,7 @@ public:
 	 * in depots), returns 0xFF.
 	 * @return the trackdir of the vehicle
 	 */
-	virtual Trackdir GetVehicleTrackdir() const { return INVALID_TRACKDIR; }
+	virtual Trackdir GetVehicleTrackdir() const { return Trackdir::Invalid; }
 
 	/**
 	 * Gets the running cost of a vehicle  that can be sent into string parameters for string processing.
@@ -606,23 +648,7 @@ public:
 	 * Get the last vehicle of this vehicle chain.
 	 * @return the last vehicle of the chain.
 	 */
-	inline Vehicle *Last()
-	{
-		Vehicle *v = this;
-		while (v->Next() != nullptr) v = v->Next();
-		return v;
-	}
-
-	/**
-	 * Get the last vehicle of this vehicle chain.
-	 * @return the last vehicle of the chain.
-	 */
-	inline const Vehicle *Last() const
-	{
-		const Vehicle *v = this;
-		while (v->Next() != nullptr) v = v->Next();
-		return v;
-	}
+	inline Vehicle *Last() const { return this->last; }
 
 	/**
 	 * Get the vehicle at offset \a n of this vehicle chain.
@@ -1036,6 +1062,15 @@ struct SpecializedVehicle : public Vehicle {
 		this->sprite_cache.sprite_seq.count = 1;
 	}
 
+	/** @copydoc Vehicle::GetMovingFront() */
+	inline T *GetMovingFront() const { return (T *)this->Vehicle::GetMovingFront(); }
+	/** @copydoc Vehicle::GetMovingBack() */
+	inline T *GetMovingBack() const { return (T *)this->Vehicle::GetMovingBack(); }
+	/** @copydoc Vehicle::GetMovingNext() */
+	inline T *GetMovingNext() const { return (T *)this->Vehicle::GetMovingNext(); }
+	/** @copydoc Vehicle::GetMovingPrev() */
+	inline T *GetMovingPrev() const { return (T *)this->Vehicle::GetMovingPrev(); }
+
 	/**
 	 * Get the first vehicle in the chain
 	 * @return first vehicle in the chain
@@ -1210,7 +1245,7 @@ struct SpecializedVehicle : public Vehicle {
 		if (this->direction != this->sprite_cache.last_direction || this->sprite_cache.is_viewport_candidate) {
 			VehicleSpriteSeq seq;
 
-			((T*)this)->T::GetImage(this->direction, EIT_ON_MAP, &seq);
+			((T*)this)->T::GetImage(this->direction, EngineImageType::OnMap, &seq);
 			if (this->sprite_cache.sprite_seq != seq) {
 				sprite_has_changed = true;
 				this->sprite_cache.sprite_seq = seq;

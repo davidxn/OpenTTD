@@ -526,7 +526,7 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Харпӑр х
 ###length 4
 
 ###length 3
-STR_DISASTER_NONE                                               :Ҫук
+STR_BREAKDOWNS_NONE                                             :Ҫук
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -586,6 +586,8 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 ###length 3
 
 
+
+###length 3
 
 
 
@@ -654,6 +656,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Аэропор�
 
 ###setting-zero-is-special
 
+
+###setting-zero-is-special
 
 
 ###length 2
@@ -788,6 +792,7 @@ STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31
 
 
 
+
 STR_CONFIG_SETTING_NEWS_SUBSIDIES                               :Грантсем: {STRING}
 
 ###length 3
@@ -867,7 +872,7 @@ STR_CONFIG_SETTING_AI                                           :Ӑмӑртуҫ�
 
 # Config errors
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 
@@ -1311,6 +1316,7 @@ STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPAN
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 
 # Goal question window
+###length 4
 
 # Goal Question button list
 ###length 18
@@ -1552,7 +1558,7 @@ STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 ###next-name-looks-similar
 
 

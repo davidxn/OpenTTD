@@ -128,7 +128,7 @@
 
 	const Town *t = ::Town::Get(town_id);
 
-	return t->received[towneffect_id].old_act;
+	return t->received[static_cast<TownAcceptanceEffect>(towneffect_id)].old_act;
 }
 
 /* static */ bool ScriptTown::SetCargoGoal(TownID town_id, ScriptCargo::TownEffect towneffect_id, SQInteger goal)
@@ -149,16 +149,16 @@
 
 	const Town *t = ::Town::Get(town_id);
 
-	switch (t->goal[towneffect_id]) {
+	switch (t->goal[static_cast<TownAcceptanceEffect>(towneffect_id)]) {
 		case TOWN_GROWTH_WINTER:
 			if (TileHeight(t->xy) >= GetSnowLine() && t->cache.population > 90) return 1;
 			return 0;
 
 		case TOWN_GROWTH_DESERT:
-			if (GetTropicZone(t->xy) == TROPICZONE_DESERT && t->cache.population > 60) return 1;
+			if (GetTropicZone(t->xy) == TropicZone::Desert && t->cache.population > 60) return 1;
 			return 0;
 
-		default: return t->goal[towneffect_id];
+		default: return t->goal[static_cast<TownAcceptanceEffect>(towneffect_id)];
 	}
 }
 
@@ -284,7 +284,11 @@
 
 	houses = std::min<SQInteger>(houses, UINT32_MAX);
 
-	return ScriptObject::Command<Commands::ExpandTown>::Do(town_id, houses, {TownExpandMode::Buildings, TownExpandMode::Roads});
+	TownExpandModes modes{TownExpandMode::Buildings};
+
+	if (_settings_game.economy.allow_town_roads) modes.Set(TownExpandMode::Roads);
+
+	return ScriptObject::Command<Commands::ExpandTown>::Do(town_id, houses, modes);
 }
 
 /* static */ bool ScriptTown::FoundTown(TileIndex tile, TownSize size, bool city, RoadLayout layout, Text *name)
@@ -292,11 +296,11 @@
 	ScriptObjectRef counter(name);
 
 	EnforceDeityOrCompanyModeValid(false);
-	EnforcePrecondition(false, ScriptCompanyMode::IsDeity() || _settings_game.economy.found_town != TF_FORBIDDEN);
+	EnforcePrecondition(false, ScriptCompanyMode::IsDeity() || _settings_game.economy.found_town != TownFounding::Forbidden);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, size == TOWN_SIZE_SMALL || size == TOWN_SIZE_MEDIUM || size == TOWN_SIZE_LARGE)
 	EnforcePrecondition(false, ScriptCompanyMode::IsDeity() || size != TOWN_SIZE_LARGE);
-	if (ScriptCompanyMode::IsDeity() || _settings_game.economy.found_town == TF_CUSTOM_LAYOUT) {
+	if (ScriptCompanyMode::IsDeity() || _settings_game.economy.found_town == TownFounding::CustomLayout) {
 		EnforcePrecondition(false, layout >= ROAD_LAYOUT_ORIGINAL && layout <= ROAD_LAYOUT_RANDOM);
 	} else {
 		/* The layout parameter is ignored for AIs when custom layouts is disabled. */

@@ -34,14 +34,14 @@ public:
 	/**
 	 * Creates a command cost return with no cost and no error
 	 */
-	CommandCost() : cost(0), message(INVALID_STRING_ID), expense_type(INVALID_EXPENSES), success(true) {}
+	CommandCost() : cost(0), message(INVALID_STRING_ID), expense_type(ExpensesType::Invalid), success(true) {}
 
 	/**
 	 * Creates a command return value with one, or optionally two, error message strings.
 	 * @param msg The error message.
 	 * @param extra_msg Optional secondary error message.
 	 */
-	explicit CommandCost(StringID msg, StringID extra_msg = INVALID_STRING_ID) : cost(0), message(msg), expense_type(INVALID_EXPENSES), success(false), extra_message(extra_msg) {}
+	explicit CommandCost(StringID msg, StringID extra_msg = INVALID_STRING_ID) : cost(0), message(msg), expense_type(ExpensesType::Invalid), success(false), extra_message(extra_msg) {}
 
 	/**
 	 * Creates a command cost with given expense type and start cost of 0
@@ -401,6 +401,8 @@ enum class DoCommandFlag : uint8_t {
 	NoModifyTownRating, ///< do not change town rating
 	ForceClearTile, ///< do not only remove the object on the tile, but also clear any water left on it
 };
+
+/** Bitset of \c DoCommandFlag elements. */
 using DoCommandFlags = EnumBitSet<DoCommandFlag, uint16_t>;
 
 /**
@@ -422,6 +424,8 @@ enum class CommandFlag : uint8_t {
 	NoEst, ///< the command is never estimated.
 	Location, ///< the command has implicit location argument.
 };
+
+/** Bitset of \c CommandFlag elements. */
 using CommandFlags = EnumBitSet<CommandFlag, uint16_t>;
 
 /** Types of commands we have. */
@@ -452,17 +456,17 @@ enum class CommandPauseLevel : uint8_t {
 template <typename T> struct CommandFunctionTraitHelper;
 template <typename... Targs>
 struct CommandFunctionTraitHelper<CommandCost(*)(DoCommandFlags, Targs...)> {
-	using Args = std::tuple<std::decay_t<Targs>...>;
-	using RetTypes = void;
-	using CbArgs = Args;
-	using CbProcType = void(*)(Commands, const CommandCost &);
+	using Args = std::tuple<std::decay_t<Targs>...>; ///< \c std::tuple with argument types for the command.
+	using RetTypes = void; ///< The return type of the command.
+	using CbArgs = Args; ///< The argument type of the callback.
+	using CbProcType = void(*)(Commands, const CommandCost &); ///< The function prototype of the callback.
 };
 template <template <typename...> typename Tret, typename... Tretargs, typename... Targs>
 struct CommandFunctionTraitHelper<Tret<CommandCost, Tretargs...>(*)(DoCommandFlags, Targs...)> {
-	using Args = std::tuple<std::decay_t<Targs>...>;
-	using RetTypes = std::tuple<std::decay_t<Tretargs>...>;
-	using CbArgs = std::tuple<std::decay_t<Tretargs>..., std::decay_t<Targs>...>;
-	using CbProcType = void(*)(Commands, const CommandCost &, Tretargs...);
+	using Args = std::tuple<std::decay_t<Targs>...>; ///< \c std::tuple with argument types for the command.
+	using RetTypes = std::tuple<std::decay_t<Tretargs>...>; ///< \c std::tuple with return types of the command.
+	using CbArgs = std::tuple<std::decay_t<Tretargs>..., std::decay_t<Targs>...>; ///< \c std::tuple with return and argument types for the callback.
+	using CbProcType = void(*)(Commands, const CommandCost &, Tretargs...); ///< The function prototype of the callback.
 };
 
 /** Defines the traits of a command. */

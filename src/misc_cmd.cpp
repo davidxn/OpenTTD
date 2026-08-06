@@ -72,7 +72,7 @@ CommandCost CmdIncreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount)
 		InvalidateCompanyWindows(c);
 	}
 
-	return CommandCost(EXPENSES_OTHER);
+	return CommandCost(ExpensesType::Other);
 }
 
 /**
@@ -212,8 +212,8 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 			VideoDriver::GetInstance()->SetScreensaverInhibited(_pause_mode.None());
 		}
 
-		SetWindowDirty(WC_STATUS_BAR, 0);
-		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+		SetWindowDirty(WindowClass::Statusbar, 0);
+		SetWindowDirty(WindowClass::MainToolbar, 0);
 	}
 	return CommandCost();
 }
@@ -225,7 +225,7 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
  */
 CommandCost CmdMoneyCheat(DoCommandFlags, Money amount)
 {
-	return CommandCost(EXPENSES_OTHER, -amount);
+	return CommandCost(ExpensesType::Other, -amount);
 }
 
 /**
@@ -240,7 +240,7 @@ CommandCost CmdMoneyCheat(DoCommandFlags, Money amount)
 CommandCost CmdChangeBankBalance(DoCommandFlags flags, TileIndex tile, Money delta, CompanyID company, ExpensesType expenses_type)
 {
 	if (!Company::IsValidID(company)) return CMD_ERROR;
-	if (expenses_type >= EXPENSES_END) return CMD_ERROR;
+	if (expenses_type >= ExpensesType::End) return CMD_ERROR;
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {

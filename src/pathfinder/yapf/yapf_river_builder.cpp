@@ -60,21 +60,24 @@ public:
 		this->end_tile = end_tile;
 
 		Node &node = Yapf().CreateNewNode();
-		node.Set(nullptr, start_tile, INVALID_TRACKDIR, false);
+		node.Set(nullptr, start_tile, Trackdir::Invalid, false);
 		Yapf().AddStartupNode(node);
 	}
 
+	/** @copydoc CYapfBaseT::PfDetectDestinationFunc */
 	inline bool PfDetectDestination(Node &n) const
 	{
 		return n.GetTile() == this->end_tile;
 	}
 
-	inline bool PfCalcCost(Node &n, const RiverBuilderFollower *)
+	/** @copydoc CYapfBaseT::PfCalcCostFunc */
+	inline bool PfCalcCost(Node &n, [[maybe_unused]] const RiverBuilderFollower *follower)
 	{
 		n.cost = n.parent->cost + 1 + RandomRange(_settings_game.game_creation.river_route_random);
 		return true;
 	}
 
+	/** @copydoc CYapfBaseT::PfCalcEstimateFunc */
 	inline bool PfCalcEstimate(Node &n)
 	{
 		n.estimate = n.cost + DistanceManhattan(this->end_tile, n.GetTile());
@@ -82,18 +85,20 @@ public:
 		return true;
 	}
 
+	/** @copydoc CYapfBaseT::PfFollowNodeFunc */
 	inline void PfFollowNode(Node &old_node)
 	{
-		for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; ++d) {
+		for (DiagDirection d : EnumRange(DiagDirection::End)) {
 			const TileIndex t = old_node.GetTile() + TileOffsByDiagDir(d);
 			if (IsValidTile(t) && RiverFlowsDown(old_node.GetTile(), t)) {
 				Node &node = Yapf().CreateNewNode();
-				node.Set(&old_node, t, INVALID_TRACKDIR, true);
+				node.Set(&old_node, t, Trackdir::Invalid, true);
 				Yapf().AddNewNode(node, RiverBuilderFollower{});
 			}
 		}
 	}
 
+	/** @copydoc CYapfBaseT::TransportTypeCharFunc */
 	inline char TransportTypeChar() const
 	{
 		return '~';

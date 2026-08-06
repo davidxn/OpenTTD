@@ -103,13 +103,13 @@ uint32_t RoadStopScopeResolver::GetVariable(uint8_t variable, [[maybe_unused]] u
 			return 2;
 
 		/* Terrain type */
-		case 0x42: return this->tile == INVALID_TILE ? 0 : (GetTileSlope(this->tile) << 8 | GetTerrainType(this->tile, TCX_NORMAL));
+		case 0x42: return this->tile == INVALID_TILE ? 0 : (GetTileSlope(this->tile) << 8 | GetTerrainType(this->tile, TileContext::Normal));
 
 		/* Road type */
-		case 0x43: return get_road_type_variable(RTT_ROAD);
+		case 0x43: return get_road_type_variable(RoadTramType::Road);
 
 		/* Tram type */
-		case 0x44: return get_road_type_variable(RTT_TRAM);
+		case 0x44: return get_road_type_variable(RoadTramType::Tram);
 
 		/* Town zone and Manhattan distance of closest town */
 		case 0x45: {
@@ -166,7 +166,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint8_t variable, [[maybe_unused]] u
 
 			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
 
-			uint32_t grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
+			GrfID grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
 			bool same_orientation = GetStationGfx(this->tile) == GetStationGfx(nearby_tile);
 			bool same_station = GetStationIndex(nearby_tile) == this->st->index;
 			uint32_t res = GetStationGfx(nearby_tile) << 12 | !same_orientation << 11 | !!same_station << 10;
@@ -191,7 +191,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint8_t variable, [[maybe_unused]] u
 			if (!IsCustomRoadStopSpecIndex(nearby_tile)) return 0;
 
 			const auto &sm = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
-			return sm.grfid;
+			return FlattenNewGRFLabel(sm.grfid);
 		}
 
 		/* 16 bit road stop ID of nearby tiles */
@@ -202,7 +202,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint8_t variable, [[maybe_unused]] u
 			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
 			if (!IsCustomRoadStopSpecIndex(nearby_tile)) return 0xFFFE;
 
-			uint32_t grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
+			GrfID grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
 
 			const auto &sm = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
 			if (sm.grfid == grfid) {
@@ -239,7 +239,7 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 		/* Pick the first cargo that we have waiting */
 		for (const auto &[cargo, spritegroup] : roadstopspec->grf_prop.spritegroups) {
 			if (cargo < NUM_CARGO && station->goods[cargo].TotalCount() > 0) {
-				ctype = cargo;
+				ctype = static_cast<CargoType>(cargo);
 				this->root_spritegroup = spritegroup;
 				break;
 			}
@@ -326,10 +326,10 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 		/* Road underlay takes precedence over tram */
 		if (type == StationType::RoadWaypoint || draw_mode.Test(RoadStopDrawMode::Overlay)) {
 			if (rti->UsesOverlay()) {
-				SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_GROUND);
+				SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, RoadSpriteType::Ground);
 				DrawSprite(ground + sprite_offset, PAL_NONE, x, y);
 
-				SpriteID overlay = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_OVERLAY);
+				SpriteID overlay = GetCustomRoadSprite(rti, INVALID_TILE, RoadSpriteType::Overlay);
 				if (overlay) DrawSprite(overlay + sprite_offset, PAL_NONE, x, y);
 			} else if (RoadTypeIsTram(roadtype)) {
 				DrawSprite(SPR_TRAMWAY_TRAM + sprite_offset, PAL_NONE, x, y);
@@ -338,7 +338,7 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 	} else {
 		/* Bay stop */
 		if (draw_mode.Test(RoadStopDrawMode::Road) && rti->UsesOverlay()) {
-			SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_ROADSTOP);
+			SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, RoadSpriteType::Roadstop);
 			DrawSprite(ground + view, PAL_NONE, x, y);
 		}
 	}
@@ -449,8 +449,8 @@ void TriggerRoadStopRandomisation(BaseStation *st, TileIndex tile, StationRandom
 	/* Check the cached cargo trigger bitmask to see if we need
 	 * to bother with any further processing.
 	 * Note: cached_roadstop_cargo_triggers must be non-zero even for cargo-independent triggers. */
-	if (st->cached_roadstop_cargo_triggers == 0) return;
-	if (IsValidCargoType(cargo_type) && !HasBit(st->cached_roadstop_cargo_triggers, cargo_type)) return;
+	if (st->cached_roadstop_cargo_triggers.None()) return;
+	if (IsValidCargoType(cargo_type) && !st->cached_roadstop_cargo_triggers.Test(cargo_type)) return;
 
 	TriggerArea ta = tas[to_underlying(trigger)];
 	if (ta == TA_WHOLE) st->waiting_random_triggers.Set(trigger);
@@ -458,10 +458,9 @@ void TriggerRoadStopRandomisation(BaseStation *st, TileIndex tile, StationRandom
 
 	uint32_t whole_reseed = 0;
 
-	/* Bitmask of completely empty cargo types to be matched. */
-	CargoTypes empty_mask{};
+	CargoTypes cargo_waiting{};
 	if (trigger == StationRandomTrigger::CargoTaken) {
-		empty_mask = GetEmptyMask(Station::From(st));
+		cargo_waiting = GetCargoWaitingMask(Station::From(st));
 	}
 
 	auto process_tile = [&](TileIndex cur_tile) {
@@ -473,10 +472,10 @@ void TriggerRoadStopRandomisation(BaseStation *st, TileIndex tile, StationRandom
 		/* Cargo taken "will only be triggered if all of those
 		 * cargo types have no more cargo waiting." */
 		if (trigger == StationRandomTrigger::CargoTaken) {
-			if ((ss->cargo_triggers & ~empty_mask) != 0) return;
+			if (ss->cargo_triggers.Any(cargo_waiting)) return;
 		}
 
-		if (!IsValidCargoType(cargo_type) || HasBit(ss->cargo_triggers, cargo_type)) {
+		if (!IsValidCargoType(cargo_type) || ss->cargo_triggers.Test(cargo_type)) {
 			RoadStopResolverObject object(ss, st, cur_tile, INVALID_ROADTYPE, GetStationType(cur_tile), GetStationGfx(cur_tile));
 			object.SetWaitingRandomTriggers(st->waiting_random_triggers | st->tile_waiting_random_triggers[tile]);
 
@@ -612,7 +611,7 @@ std::optional<uint8_t> AllocateSpecToRoadStop(const RoadStopSpec *spec, BaseStat
 
 	/* Try to find an unused spec slot */
 	for (i = 1; i < st->roadstop_speclist.size() && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
-		if (st->roadstop_speclist[i].spec == nullptr && st->roadstop_speclist[i].grfid == 0) break;
+		if (st->roadstop_speclist[i].spec == nullptr && st->roadstop_speclist[i].grfid.Empty()) break;
 	}
 
 	if (i == NUM_ROADSTOPSPECS_PER_STATION) {
@@ -660,14 +659,14 @@ void DeallocateSpecFromRoadStop(BaseStation *st, uint8_t specindex)
 
 	/* This specindex is no longer in use, so deallocate it */
 	st->roadstop_speclist[specindex].spec     = nullptr;
-	st->roadstop_speclist[specindex].grfid    = 0;
+	st->roadstop_speclist[specindex].grfid = {};
 	st->roadstop_speclist[specindex].localidx = 0;
 
 	/* If this was the highest spec index, reallocate */
 	if (specindex == st->roadstop_speclist.size() - 1) {
 		size_t num_specs;
 		for (num_specs = st->roadstop_speclist.size() - 1; num_specs > 0; num_specs--) {
-			if (st->roadstop_speclist[num_specs].grfid != 0) break;
+			if (!st->roadstop_speclist[num_specs].grfid.Empty()) break;
 		}
 
 		if (num_specs > 0) {
@@ -675,7 +674,7 @@ void DeallocateSpecFromRoadStop(BaseStation *st, uint8_t specindex)
 		} else {
 			st->roadstop_speclist.clear();
 			st->cached_roadstop_anim_triggers = {};
-			st->cached_roadstop_cargo_triggers = 0;
+			st->cached_roadstop_cargo_triggers.Reset();
 			return;
 		}
 	}
@@ -690,13 +689,13 @@ void DeallocateSpecFromRoadStop(BaseStation *st, uint8_t specindex)
 void RoadStopUpdateCachedTriggers(BaseStation *st)
 {
 	st->cached_roadstop_anim_triggers = {};
-	st->cached_roadstop_cargo_triggers = 0;
+	st->cached_roadstop_cargo_triggers.Reset();
 
 	/* Combine animation trigger bitmask for all road stop specs
 	 * of this station. */
 	for (const auto &sm : GetStationSpecList<RoadStopSpec>(st)) {
 		if (sm.spec == nullptr) continue;
 		st->cached_roadstop_anim_triggers.Set(sm.spec->animation.triggers);
-		st->cached_roadstop_cargo_triggers |= sm.spec->cargo_triggers;
+		st->cached_roadstop_cargo_triggers.Set(sm.spec->cargo_triggers);
 	}
 }
